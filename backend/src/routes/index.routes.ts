@@ -8,4 +8,7 @@ const router:Router =Router()
 dotenv.config()
 
 
-router.use("/webhook",webhookRoutes,verifySignature)
+router.use("/webhook",verifySignature, webhookRoutes)
+
+
+export default router;
