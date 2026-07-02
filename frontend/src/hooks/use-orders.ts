@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 
-export type OrderStatus = "PENDING" | "PAID_IN_ESCROW" | "DISPATCHED" | "SETTLED";
+export type OrderStatus = "PENDING" | "PAID_IN_ESCROW" | "DISPATCHED" | "SETTLED" | "DISPUTED";
 
 export interface Order {
   id: string;
@@ -9,16 +9,20 @@ export interface Order {
   buyer: string;
   status: OrderStatus;
   timeAgo: string;
+  dateCreated: string;
+  deliveryAddress: string;
+  notes?: string;
 }
 
 const INITIAL_ORDERS: Order[] = [
-  { status: "PENDING", item: '1x Air Jordan 4 Retro', amount: 45000, buyer: '0803321XXXX', id: 'ORD-001', timeAgo: '2m ago' },
-  { status: "PENDING", item: '2x Body Butter Set', amount: 8500, buyer: '0817654XXXX', id: 'ORD-002', timeAgo: '14m ago' },
-  { status: "PAID_IN_ESCROW", item: '1x Designer Shoe', amount: 15000, buyer: '0901234XXXX', id: 'ORD-003', timeAgo: '1h ago' },
-  { status: "PAID_IN_ESCROW", item: '1x Wool Blazer', amount: 32000, buyer: '0809988XXXX', id: 'ORD-004', timeAgo: '3h ago' },
-  { status: "DISPATCHED", item: '1x Laptop Stand', amount: 12500, buyer: '0704411XXXX', id: 'ORD-005', timeAgo: '5h ago' },
-  { status: "SETTLED", item: '3x Ankara Print Set', amount: 22000, buyer: '0813344XXXX', id: 'ORD-006', timeAgo: '1d ago' },
-  { status: "SETTLED", item: '1x Perfume Bundle', amount: 18750, buyer: '0905678XXXX', id: 'ORD-007', timeAgo: '2d ago' },
+  { id: 'ORD-001234', status: 'PENDING', item: 'iPhone 14 Pro (256GB)', amount: 500000, buyer: '080x xxx xxxx', deliveryAddress: 'Lekki, Lagos', dateCreated: 'Dec 15, 2024', timeAgo: '2m ago', notes: '' },
+  { id: 'ORD-001233', status: 'PAID_IN_ESCROW', item: 'Samsung Galaxy S24', amount: 450000, buyer: '090x xxx xxxx', deliveryAddress: 'Victoria Island, Lagos', dateCreated: 'Dec 14, 2024 at 2:15 PM', timeAgo: '1h ago', notes: '' },
+  { id: 'ORD-001232', status: 'DISPUTED', item: 'MacBook Air M2', amount: 900000, buyer: '090x xxx xxxx', deliveryAddress: 'Banana Island, Lagos', dateCreated: 'Dec 13, 2024 at 2:15 PM', timeAgo: '5h ago', notes: '' },
+  { id: 'ORD-001231', status: 'SETTLED', item: 'iPad Pro 12.9', amount: 400000, buyer: '090x xxx xxxx', deliveryAddress: 'Ogudu, Lagos', dateCreated: 'Dec 12, 2024', timeAgo: '1d ago', notes: '' },
+  { id: 'ORD-001230', status: 'PAID_IN_ESCROW', item: 'AirPods Pro Max', amount: 300000, buyer: '080x xxx xxxx', deliveryAddress: 'Ikeja, Lagos', dateCreated: 'Dec 11, 2024', timeAgo: '2d ago', notes: '' },
+  { id: 'ORD-001229', status: 'DISPATCHED', item: 'Sony WH-1000XM5', amount: 250000, buyer: '080x xxx xxxx', deliveryAddress: 'Surulere, Lagos', dateCreated: 'Dec 10, 2024', timeAgo: '3d ago', notes: '' },
+  { id: 'ORD-001228', status: 'DISPATCHED', item: 'Nintendo Switch OLED', amount: 180000, buyer: '070x xxx xxxx', deliveryAddress: 'Yaba, Lagos', dateCreated: 'Dec 9, 2024', timeAgo: '4d ago', notes: '' },
+  { id: 'ORD-001227', status: 'PENDING', item: 'Apple Watch Series 9', amount: 220000, buyer: '081x xxx xxxx', deliveryAddress: 'Ajah, Lagos', dateCreated: 'Dec 8, 2024', timeAgo: '5d ago', notes: '' }
 ];
 
 let globalOrders = [...INITIAL_ORDERS];
@@ -43,12 +47,13 @@ export function useOrders() {
 
   useState(() => subscribe());
 
-  const addOrder = useCallback((order: Omit<Order, "id" | "status" | "timeAgo">) => {
+  const addOrder = useCallback((order: Omit<Order, "id" | "status" | "timeAgo" | "dateCreated">) => {
     const newOrder: Order = {
       ...order,
-      id: `ORD-${Math.floor(Math.random() * 1000).toString().padStart(3, "0")}`,
+      id: `ORD-${Math.floor(Math.random() * 10000).toString().padStart(4, "0")}`,
       status: "PENDING",
       timeAgo: "just now",
+      dateCreated: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
     };
     globalOrders = [newOrder, ...globalOrders];
     emit();

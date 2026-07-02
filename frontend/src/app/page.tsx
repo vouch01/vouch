@@ -1,155 +1,160 @@
-"use client";
+"use client"
 
 import { useState } from "react";
-import { useRouter } from "next/navigation"
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Eye, EyeOff } from "lucide-react";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { AppShell } from "@/components/app-shell";
+import { CreateOrderModal, OrderDetailModal, RiderLinkModal } from "@/components/modals";
+import { Order, useOrders } from "@/hooks/use-orders";
 
-const loginSchema = z.object({
-  email: z.string().email("Enter a valid email address"),
-  password: z.string().min(1, "Password is required"),
-});
+export default function VendorDashboard() {
+  const { orders } = useOrders();
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [orderModalOpen, setOrderModalOpen] = useState(false);
+  const [riderModalOpen, setRiderModalOpen] = useState(false);
+  const [riderOrderId, setRiderOrderId] = useState("");
 
-type LoginValues = z.infer<typeof loginSchema>;
+  const pendingOrders = orders.filter((o) => o.status === "PENDING").length;
+  const readyOrders = orders.filter((o) => o.status === "PAID_IN_ESCROW").length;
+  const settledOrders = orders.filter((o) => o.status === "SETTLED").length;
 
-export default function Login() {
-  const router = useRouter();
-  const [showPassword, setShowPassword] = useState(false);
+  const recentOrders = orders.slice(0, 3);
+  const recentActivity = [
+    'Payment received for order ORD-001233 / 2 hours ago',
+    'Rider verification completed for order ORD-001232 / 5 hours ago',
+    'Payout released - ₦400,000 to your bank account / Yesterday at 2:30 PM'
+  ];
 
-  const form = useForm<LoginValues>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "" },
-  });
+  const handleOrderClick = (order: Order) => {
+    setSelectedOrder(order);
+    setOrderModalOpen(true);
+  };
 
-  function onSubmit(_values: LoginValues) {
-    router.push("/");
-  }
+  const getStatusBadge = (status: string) => {
+    switch(status) {
+      case 'PENDING': return <Badge variant="secondary" className="bg-gray-100 text-gray-700">Pending Payment</Badge>;
+      case 'PAID_IN_ESCROW': return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">Ready to Ship</Badge>;
+      case 'DISPATCHED': return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">Dispatched</Badge>;
+      case 'SETTLED': return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Settled</Badge>;
+      case 'DISPUTED': return <Badge className="bg-pink-100 text-pink-800 hover:bg-pink-100">Disputed</Badge>;
+      default: return <Badge variant="outline">{status}</Badge>;
+    }
+  };
 
   return (
-    <div className="min-h-screen flex">
-      <div
-        className="hidden lg:flex lg:w-[58%] relative flex-col justify-between p-12"
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1400&auto=format&fit=crop&q=80')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="absolute inset-0 bg-foreground/60" />
-        <div className="relative z-10">
-          <span className="text-white text-2xl font-bold tracking-tight">Vouch</span>
-        </div>
-        <div className="relative z-10">
-          <blockquote className="text-white text-xl font-medium leading-snug max-w-sm">
-            "The layer of trust every social commerce transaction has been missing."
-          </blockquote>
-          <p className="mt-3 text-white/60 text-sm">Secure escrow. Instant payouts. Zero disputes.</p>
-        </div>
-      </div>
-
-      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-white">
-        <div className="w-full max-w-sm">
-          <div className="mb-8">
-            <span className="lg:hidden text-2xl font-bold text-foreground tracking-tight block mb-6">Vouch</span>
-            <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1 font-medium">Welcome back</p>
-            <h2 className="text-2xl font-bold text-foreground" data-testid="text-heading">
-              Login to your account
-            </h2>
+    <AppShell pageTitle="Dashboard">
+      <div className="max-w-6xl mx-auto space-y-8">
+        
+        {/* Section 1 - Welcome bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Welcome Back John!</h1>
+            <p className="text-sm text-muted-foreground mt-1">Manage your escrow transactions and track payments</p>
           </div>
-
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-foreground">Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="email"
-                        placeholder="Enter your email"
-                        autoComplete="email"
-                        className="rounded-lg border-border h-11 text-sm"
-                        data-testid="input-email"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-foreground">Password</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Input
-                          {...field}
-                          type={showPassword ? "text" : "password"}
-                          placeholder="Enter your password"
-                          autoComplete="current-password"
-                          className="rounded-lg border-border h-11 text-sm pr-10"
-                          data-testid="input-password"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword((v) => !v)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
-                          data-testid="button-toggle-password"
-                        >
-                          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                        </button>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  className="text-sm text-muted-foreground hover:text-foreground cursor-pointer"
-                  data-testid="link-forgot-password"
-                  onClick={() => router.push("/forgot-password")}
-                >
-                  Forgot password?
-                </button>
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full h-11 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium cursor-pointer"
-                data-testid="button-login"
-              >
-                Login
-              </Button>
-            </form>
-          </Form>
-
-          <p className="mt-6 text-sm text-muted-foreground">
-            Don&apos;t have an account?{" "}
-            <button
-              onClick={() => router.push("/signup")}
-              className="text-primary font-medium hover:underline cursor-pointer"
-              data-testid="link-signup"
-            >
-              Sign up
-            </button>
-          </p>
+          <Button onClick={() => setCreateModalOpen(true)} className="shadow-sm">
+            + Create Order
+          </Button>
         </div>
+
+        {/* Section 2 - Stats grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-white border p-5 rounded-lg">
+            <p className="text-sm font-medium text-muted-foreground mb-1">Total Orders</p>
+            <p className="text-3xl font-bold">24</p>
+            <p className="text-xs text-muted-foreground mt-1">This month</p>
+          </div>
+          <div className="bg-white border p-5 rounded-lg">
+            <p className="text-sm font-medium text-muted-foreground mb-1">Pending Payment</p>
+            <p className="text-3xl font-bold">{pendingOrders}</p>
+            <p className="text-xs text-muted-foreground mt-1">₦1,250,000</p>
+          </div>
+          <div className="bg-white border p-5 rounded-lg">
+            <p className="text-sm font-medium text-muted-foreground mb-1">Ready to Ship</p>
+            <p className="text-3xl font-bold">{readyOrders}</p>
+            <p className="text-xs text-muted-foreground mt-1">₦800,000</p>
+          </div>
+          <div className="bg-white border p-5 rounded-lg">
+            <p className="text-sm font-medium text-muted-foreground mb-1">Settled Orders</p>
+            <p className="text-3xl font-bold">{settledOrders}</p>
+            <p className="text-xs text-green-600 font-medium mt-1">Completed</p>
+          </div>
+        </div>
+
+        {/* Section 3 - Recent Orders */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-foreground">Recent Orders</h2>
+            <Link href="/orders" className="text-sm font-medium text-primary hover:underline">View All</Link>
+          </div>
+          <div className="bg-white border rounded-lg overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-slate-50/50">
+                  <TableHead>Order ID</TableHead>
+                  <TableHead>Buyer Phone</TableHead>
+                  <TableHead>Item Description</TableHead>
+                  <TableHead>Amount (₦)</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Date Created</TableHead>
+                  <TableHead className="text-right">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {recentOrders.map((order) => (
+                  <TableRow key={order.id} className="cursor-pointer hover:bg-slate-50" onClick={() => handleOrderClick(order)}>
+                    <TableCell className="font-mono text-primary font-medium">{order.id}</TableCell>
+                    <TableCell className="font-mono text-sm">{order.buyer}</TableCell>
+                    <TableCell className="max-w-50 truncate">{order.item}</TableCell>
+                    <TableCell className="font-medium">{order.amount.toLocaleString()}</TableCell>
+                    <TableCell>{getStatusBadge(order.status)}</TableCell>
+                    <TableCell className="text-muted-foreground text-sm">{order.dateCreated}</TableCell>
+                    <TableCell className="text-right">
+                      {order.status === 'DISPATCHED' ? (
+                        <span 
+                          className="text-sm font-medium text-primary hover:underline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setRiderOrderId(order.id);
+                            setRiderModalOpen(true);
+                          }}
+                        >
+                          Track
+                        </span>
+                      ) : (
+                        <span className="text-sm font-medium text-primary hover:underline">View</span>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+
+        {/* Section 4 - Recent Activity */}
+        <div className="space-y-4">
+          <h2 className="text-lg font-bold text-foreground">Recent Activity</h2>
+          <div className="bg-white border rounded-lg overflow-hidden">
+            {recentActivity.map((activity, i) => {
+              const [desc, time] = activity.split(' / ');
+              return (
+                <div key={i} className="p-4 border-b last:border-0 hover:bg-slate-50 transition-colors">
+                  <p className="text-sm text-foreground">{desc}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{time}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
       </div>
-    </div>
+
+      <CreateOrderModal open={createModalOpen} onOpenChange={setCreateModalOpen} />
+      <OrderDetailModal order={selectedOrder} open={orderModalOpen} onOpenChange={setOrderModalOpen} />
+      <RiderLinkModal open={riderModalOpen} onOpenChange={setRiderModalOpen} orderId={riderOrderId} />
+    </AppShell>
   );
 }
