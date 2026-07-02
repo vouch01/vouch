@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -16,52 +17,51 @@ const schema = z.object({
 type Values = z.infer<typeof schema>;
 
 export default function ForgotPassword() {
-  const router = useRouter();
+    const router = useRouter();
 
   const form = useForm<Values>({
     resolver: zodResolver(schema),
     defaultValues: { email: "" },
   });
 
-  function onSubmit(_values: Values) {
+  function onSubmit(values: Values) {
+    console.log(values);
     router.push("/verify-otp");
   }
 
   return (
-    <div className="min-h-screen flex">
-      <div
-        className="hidden lg:flex lg:w-[58%] relative flex-col justify-between p-12"
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1400&auto=format&fit=crop&q=80')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="absolute inset-0 bg-foreground/60" />
-        <div className="relative z-10">
-          <span className="text-white text-2xl font-bold tracking-tight">Vouch</span>
-        </div>
-        <div className="relative z-10">
-          <blockquote className="text-white text-xl font-medium leading-snug max-w-sm">
-            "The layer of trust every social commerce transaction has been missing."
-          </blockquote>
-          <p className="mt-3 text-white/60 text-sm">Secure escrow. Instant payouts. Zero disputes.</p>
-        </div>
-      </div>
+    <div
+      className="min-h-screen relative flex items-center justify-end"
+      style={{
+        backgroundImage: "url('/images/auth-bg.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <div className="absolute inset-0 bg-black/40" />
 
-      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-white">
-        <div className="w-full max-w-sm">
-          <div className="mb-8">
-            <span className="lg:hidden text-2xl font-bold text-foreground tracking-tight block mb-6">Vouch</span>
-            <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1 font-medium">Password reset</p>
-            <h2 className="text-2xl font-bold text-foreground" data-testid="text-heading">
-              Forgot Password
-            </h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Provide your email to receive an OTP for password reset.
+      <div className="relative z-10 w-full max-w-md mx-6 lg:mr-20 my-10">
+        <div className="bg-white rounded-2xl shadow-2xl px-10 py-10">
+          <div className="flex flex-col items-center mb-7">
+            {/* <img src={vouchLogo} alt="Vouch" className="h-8 w-auto mb-3" /> */}
+            <Image
+              src={"/logos/vouch-logo.png"}
+              alt="Vouch"
+              width={100}
+              height={100}
+              className="mb-3"
+            />
+            <p className="text-sm text-muted-foreground text-center">
+              A trusted payment layer for social commerce.
             </p>
           </div>
+
+          <h2 className="text-lg font-semibold text-foreground mb-1" data-testid="text-heading">
+            Forgot Password
+          </h2>
+          <p className="text-sm text-muted-foreground mb-5">
+            Provide your email to receive an OTP for password reset.
+          </p>
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -88,7 +88,7 @@ export default function ForgotPassword() {
 
               <Button
                 type="submit"
-                className="w-full h-11 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium cursor-pointer" 
+                className="w-full h-11 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium cursor-pointer"
                 data-testid="button-continue"
               >
                 Continue
@@ -98,7 +98,7 @@ export default function ForgotPassword() {
 
           <button
             onClick={() => router.push("/login")}
-            className="mt-6 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground cursor-pointer"
+            className="mt-5 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground cursor-pointer"
             data-testid="link-back-to-login"
           >
             <ArrowLeft size={14} />

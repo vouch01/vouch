@@ -4,6 +4,7 @@ import { useRef, useState, KeyboardEvent, ChangeEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 const OTP_LENGTH = 6;
 const RESEND_SECONDS = 3 * 60;
@@ -91,46 +92,40 @@ export default function VerifyOtp() {
   }
 
   return (
-    <div className="min-h-screen flex">
-      <div
-        className="hidden lg:flex lg:w-[58%] relative flex-col justify-between p-12"
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1400&auto=format&fit=crop&q=80')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="absolute inset-0 bg-foreground/60" />
-        <div className="relative z-10">
-          <span className="text-white text-2xl font-bold tracking-tight">
-            Vouch
-          </span>
-        </div>
-        <div className="relative z-10">
-          <blockquote className="text-white text-xl font-medium leading-snug max-w-sm">
-            "The layer of trust every social commerce transaction has been
-            missing."
-          </blockquote>
-          <p className="mt-3 text-white/60 text-sm">
-            Secure escrow. Instant payouts. Zero disputes.
-          </p>
-        </div>
-      </div>
+    <div
+      className="min-h-screen relative flex items-center justify-end"
+      style={{
+        backgroundImage: "url('/images/auth-bg.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <div className="absolute inset-0 bg-black/40" />
 
-      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-white">
-        <div className="w-full max-w-sm">
-          <div className="mb-8 text-center">
-            <span className="lg:hidden text-2xl font-bold text-foreground tracking-tight block mb-6">
-              Vouch
-            </span>
+      <div className="relative z-10 w-full max-w-md mx-6 lg:mr-20 my-10">
+        <div className="bg-white rounded-2xl shadow-2xl px-10 py-10">
+          <div className="flex flex-col items-center mb-7">
+            {/* <img src={vouchLogo} alt="Vouch" className="h-8 w-auto mb-3" /> */}
+            <Image
+              src={"/logos/vouch-logo.png"}
+              alt="Vouch"
+              width={100}
+              height={100}
+              className="mb-3"
+            />
+            <p className="text-sm text-muted-foreground text-center">
+              A trusted payment layer for social commerce.
+            </p>
+          </div>
+
+          <div className="text-center mb-6">
             <h2
-              className="text-2xl font-bold text-foreground"
+              className="text-lg font-semibold text-foreground mb-1"
               data-testid="text-heading"
             >
               Verify OTP
             </h2>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               We sent an OTP to{" "}
               <span className="font-medium text-foreground">
                 otp@example.com
@@ -174,7 +169,15 @@ export default function VerifyOtp() {
 
           <p className="text-sm text-muted-foreground text-center mb-6">
             {countdown > 0 ? (
-              <>Resend available in <span className="font-semibold text-foreground tabular-nums" data-testid="text-countdown">{formatTime(countdown)}</span></>
+              <>
+                Resend available in{" "}
+                <span
+                  className="font-semibold text-foreground tabular-nums"
+                  data-testid="text-countdown"
+                >
+                  {formatTime(countdown)}
+                </span>
+              </>
             ) : (
               <>
                 Resend available:{" "}
@@ -199,7 +202,7 @@ export default function VerifyOtp() {
 
           <button
             onClick={() => router.push("/login")}
-            className="mt-6 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mx-auto cursor-pointer"
+            className="mt-5 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mx-auto cursor-pointer"
             data-testid="link-back-to-login"
           >
             <ArrowLeft size={14} />
