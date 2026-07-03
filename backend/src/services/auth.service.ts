@@ -9,9 +9,6 @@ interface VendorInputs {
   business_name: string;
   email: string;
   password: string;
-  bank_code: string;
-  bank_account_number: string;
-  bank_account_name: string;
 }
 
 export const createVendor = async (vendorData: VendorInputs) => {
@@ -20,9 +17,6 @@ export const createVendor = async (vendorData: VendorInputs) => {
       business_name,
       email,
       password,
-      bank_code,
-      bank_account_number,
-      bank_account_name,
     } = vendorData;
     const existingVendor = await db
       .select()
@@ -39,9 +33,9 @@ export const createVendor = async (vendorData: VendorInputs) => {
         business_name,
         email,
         password_hash: passwordHash,
-        bank_code,
-        bank_account_number,
-        bank_account_name,
+        bank_code: "",
+        bank_account_number: "",
+        bank_account_name: "", 
       })
       .returning();
 
