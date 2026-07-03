@@ -6,6 +6,11 @@ import * as t from "drizzle-orm/pg-core";
 import { timestamps } from "./columns.helpers.js";
 
 // export const rolesEnum = pgEnum("roles", ["VENDOR", "BUYER", "RIDER"]);
+export const otpTokenStatusEnum =pgEnum("otp_token_status", [
+  "USED",
+  "UNUSED",
+  "EXPIRED"
+])
 export const orderStatusEnum = pgEnum("order_status", [
   "PENDING_PAYMENT",
   "PAID_IN_ESCROW",
@@ -59,4 +64,11 @@ export const webhook_events = pgTable("webhook_events", {
   ...timestamps
 });
 
+export const otp_tokens = pgTable("otp_tokens", {
+  id: t.uuid("id").primaryKey().defaultRandom(),
+  vendor_id: t.uuid("vendor_id").references(() => vendors.id).notNull(),
+  otp_token: t.varchar("otp_token", {length: 6}),
+  expires_at: t.timestamp("expires_at").notNull(),
+  ...timestamps
+})
 
