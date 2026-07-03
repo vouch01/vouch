@@ -67,7 +67,9 @@ export const webhook_events = pgTable("webhook_events", {
 export const otp_tokens = pgTable("otp_tokens", {
   id: t.uuid("id").primaryKey().defaultRandom(),
   vendor_id: t.uuid("vendor_id").references(() => vendors.id).notNull(),
-  otp_token: t.varchar("otp_token", {length: 6}),
+  verified:t.boolean("is_active").default(false),
+  otp_token: t.varchar("otp_token", {length: 255}),
+  status: otpTokenStatusEnum("status").default("UNUSED").notNull(),
   expires_at: t.timestamp("expires_at").notNull(),
   ...timestamps
 })
