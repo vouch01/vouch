@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-const rateLimiter=require('express-rate-limit');
+import rateLimit from 'express-rate-limit';
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -19,7 +19,7 @@ export const authenticate = (req: any, res: any, next: any) => {
   }
 };
 
-export const otpRateLimit = rateLimiter({
+export const otpRateLimit = rateLimit({
 windowMs : 30*60*1000,
     max: 4,
     statusCode: 429,
