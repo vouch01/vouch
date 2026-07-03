@@ -1,11 +1,11 @@
+"use client";
+
 import { ReactNode, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { 
-  LayoutDashboard, 
-  ShoppingBag, 
-  Settings, 
+  LayoutDashboard,
   LogOut, 
   Bell, 
   User,
@@ -17,6 +17,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { BsHandbag } from "react-icons/bs";
+import { PiGear } from "react-icons/pi";
 
 interface AppShellProps {
   children: ReactNode;
@@ -29,8 +31,8 @@ export function AppShell({ children, pageTitle, headerRight }: AppShellProps) {
 
   const navItems = [
     { name: "Dashboard", href: "/", icon: LayoutDashboard },
-    { name: "Orders", href: "/orders", icon: ShoppingBag },
-    { name: "Settings", href: "/settings", icon: Settings },
+    { name: "Orders", href: "/orders", icon: BsHandbag },
+    { name: "Settings", href: "/settings", icon: PiGear },
   ];
 
   return (
