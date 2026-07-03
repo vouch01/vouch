@@ -1,3 +1,7 @@
+
+
+"use client"
+
 import * as React from "react"
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
@@ -105,18 +109,20 @@ const Carousel = React.forwardRef<
     }, [api, setApi])
 
     React.useEffect(() => {
-      if (!api) {
-        return
-      }
+  if (!api) {
+    return
+  }
 
-      onSelect(api)
-      api.on("reInit", onSelect)
-      api.on("select", onSelect)
+  queueMicrotask(() => onSelect(api))
 
-      return () => {
-        api?.off("select", onSelect)
-      }
-    }, [api, onSelect])
+  api.on("reInit", onSelect)
+  api.on("select", onSelect)
+
+  return () => {
+    api.off("reInit", onSelect)
+    api.off("select", onSelect)
+  }
+}, [api, onSelect])
 
     return (
       <CarouselContext.Provider

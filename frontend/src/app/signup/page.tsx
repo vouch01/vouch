@@ -2,17 +2,27 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Eye, EyeOff } from "lucide-react";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 const signupSchema = z
   .object({
-    businessName: z.string().min(2, "Business name must be at least 2 characters"),
+    businessName: z
+      .string()
+      .min(2, "Business name must be at least 2 characters"),
     email: z.string().email("Enter a valid email address"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string().min(1, "Please confirm your password"),
@@ -25,51 +35,58 @@ const signupSchema = z
 type SignupValues = z.infer<typeof signupSchema>;
 
 export default function Signup() {
-    const router = useRouter();
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
   const form = useForm<SignupValues>({
     resolver: zodResolver(signupSchema),
-    defaultValues: { businessName: "", email: "", password: "", confirmPassword: "" },
+    defaultValues: {
+      businessName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
   });
 
-  function onSubmit(_values: SignupValues) {
-    router.push("/welcome");
+  function onSubmit(values: SignupValues) {
+    console.log(values);
+    router.push("/check-inbox");
   }
 
   return (
-    <div className="min-h-screen flex">
-      <div
-        className="hidden lg:flex lg:w-[58%] relative flex-col justify-between p-12"
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1400&auto=format&fit=crop&q=80')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="absolute inset-0 bg-foreground/60" />
-        <div className="relative z-10">
-          <span className="text-white text-2xl font-bold tracking-tight">Vouch</span>
-        </div>
-        <div className="relative z-10">
-          <blockquote className="text-white text-xl font-medium leading-snug max-w-sm">
-            "The layer of trust every social commerce transaction has been missing."
-          </blockquote>
-          <p className="mt-3 text-white/60 text-sm">Secure escrow. Instant payouts. Zero disputes.</p>
-        </div>
-      </div>
+    <div
+      className="min-h-screen relative flex items-center justify-end"
+      style={{
+        backgroundImage: "url('/images/auth-bg.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <div className="absolute inset-0 bg-black/40" />
 
-      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-white">
-        <div className="w-full max-w-sm">
-          <div className="mb-8">
-            <span className="lg:hidden text-2xl font-bold text-foreground tracking-tight block mb-6">Vouch</span>
-            <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1 font-medium">Get started</p>
-            <h2 className="text-2xl font-bold text-foreground" data-testid="text-heading">
-              Create your account
-            </h2>
+      <div className="relative z-10 w-full max-w-md mx-6 lg:mr-20 my-10">
+        <div className="bg-white rounded-2xl shadow-2xl px-10 py-10">
+          <div className="flex flex-col items-center mb-7">
+            {/* <img src={vouchLogo} alt="Vouch" className="h-8 w-auto mb-3" /> */}
+            <Image
+              src={"/logos/vouch-logo.png"}
+              alt="Vouch"
+              width={100}
+              height={100}
+              className="mb-3"
+            />
+            <p className="text-sm text-muted-foreground text-center">
+              A trusted payment layer for social commerce.
+            </p>
           </div>
+
+          <h2
+            className="text-lg font-semibold text-foreground mb-5"
+            data-testid="text-heading"
+          >
+            Create your account
+          </h2>
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -78,7 +95,9 @@ export default function Signup() {
                 name="businessName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-foreground">Business Name</FormLabel>
+                    <FormLabel className="text-sm font-medium text-foreground">
+                      Business Name
+                    </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -98,7 +117,9 @@ export default function Signup() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-foreground">Email</FormLabel>
+                    <FormLabel className="text-sm font-medium text-foreground">
+                      Email
+                    </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -119,7 +140,9 @@ export default function Signup() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-foreground">Password</FormLabel>
+                    <FormLabel className="text-sm font-medium text-foreground">
+                      Password
+                    </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
@@ -136,7 +159,11 @@ export default function Signup() {
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
                           data-testid="button-toggle-password"
                         >
-                          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                          {showPassword ? (
+                            <EyeOff size={16} />
+                          ) : (
+                            <Eye size={16} />
+                          )}
                         </button>
                       </div>
                     </FormControl>
@@ -150,7 +177,9 @@ export default function Signup() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-foreground">Confirm password</FormLabel>
+                    <FormLabel className="text-sm font-medium text-foreground">
+                      Confirm password
+                    </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
@@ -167,7 +196,11 @@ export default function Signup() {
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
                           data-testid="button-toggle-confirm-password"
                         >
-                          {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
+                          {showConfirm ? (
+                            <EyeOff size={16} />
+                          ) : (
+                            <Eye size={16} />
+                          )}
                         </button>
                       </div>
                     </FormControl>
@@ -186,11 +219,11 @@ export default function Signup() {
             </form>
           </Form>
 
-          <p className="mt-6 text-sm text-muted-foreground">
+          <p className="mt-5 text-sm text-muted-foreground text-center">
             Already have an account?{" "}
             <button
-              onClick={() => router.push("/")}
-              className="text-primary font-medium hover:underline cursor-pointer"
+              onClick={() => router.push("/login")}
+              className="text-primary font-semibold hover:underline cursor-pointer"
               data-testid="link-login"
             >
               Login
