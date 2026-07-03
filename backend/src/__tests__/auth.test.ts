@@ -40,31 +40,31 @@ describe("Auth flow ", () => {
 });
 
 
-// describe("Password reset flow", () => {
-//   let otp: string;
-//   let email:string;
-//   it("returns status code 200 if otp is generated successfully", async() =>{
-//     const res = await request(app)
-//     .post("/v1/auth/otp")
-//     .send({
-//       email: "test@example.com"
-//     })
-//      expect(res.statusCode).toEqual(200);
-//     expect(res.body.message).toContain("successfully");
+describe("Password reset flow", () => {
+  let otp: string;
+  let email:string;
+  it("returns status code 200 if otp is generated successfully", async() =>{
+    const res = await request(app)
+    .post("/v1/auth/otp")
+    .send({
+      email: "test@example.com"
+    })
+     expect(res.statusCode).toEqual(200);
+    expect(res.body.message).toContain("successfully");
 
-//     otp = res.body.otp
-//   })
-//   it("returns status code 200, if otp verifies successfully", async ()=> {
-//     const res = await request(app)
-//     .post("/v1/auth/verify")
-//     .send({
-//       email: "test@example.com",
-//       otp
-//     })
-//      expect(res.statusCode).toEqual(200);
-//     expect(res.body.message).toContain("successfully");
-//   }
-// )
-// })
+    otp = res.body.otp
+  })
+  it("returns status code 200, if otp verifies successfully", async ()=> {
+    const res = await request(app)
+    .post("/v1/auth/verify")
+    .send({
+      email: "test@example.com",
+      otp
+    })
+     expect(res.statusCode).toEqual(200);
+    expect(res.body.message).toContain("successfully");
+  }
+)
+})
 
 
