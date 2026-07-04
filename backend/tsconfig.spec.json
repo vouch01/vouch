@@ -1,13 +1,17 @@
 {
+  // "extends": "./tsconfig.json",
   "compilerOptions": {
     "rootDir": "src",
-    "module": "commonjs", 
+    "module": "commonjs",
     "target": "ESNext",
-    "types": ["jest","node"],
+    "types": ["jest", "node"],
     "moduleResolution": "node",
     "esModuleInterop": true,
     "strict": true,
+    "verbatimModuleSyntax": false,
+    "isolatedModules": false,
     "skipLibCheck": true,
+    "ignoreDeprecations": "6.0"
   },
-  "include": ["src"]
+  "include": ["src", "src/__tests__/**/*.ts", "**/*.test.ts"]
 }

@@ -3,7 +3,8 @@ module.exports = {
   testEnvironment: 'node',
   transform: {
     '^.+\\.ts$': ['ts-jest', {
-      tsconfig: 'tsconfig.spec.json'
+      tsconfig: 'tsconfig.spec.json',
+       useESM: false
     }]
   },
   moduleNameMapper: {
