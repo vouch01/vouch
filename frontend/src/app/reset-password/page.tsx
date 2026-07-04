@@ -10,6 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import AuthShell from "@/components/auth-shell";
 
 const schema = z
   .object({
@@ -39,18 +40,8 @@ export default function ResetPassword() {
   }
 
   return (
-    <div
-      className="min-h-screen relative flex items-center justify-end"
-      style={{
-        backgroundImage: "url('/images/auth-bg.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <div className="absolute inset-0 bg-black/40" />
-
-      <div className="relative z-10 w-full max-w-md mx-6 lg:mr-20 my-10">
-        <div className="bg-white rounded-2xl shadow-2xl px-10 py-10">
+    <AuthShell>
+      <div className="bg-white rounded-2xl shadow-2xl px-10 py-10">
           <div className="flex flex-col items-center mb-7">
             {/* <img src={vouchLogo} alt="Vouch" className="h-8 w-auto mb-3" /> */}
             <Image
@@ -143,7 +134,6 @@ export default function ResetPassword() {
             </form>
           </Form>
         </div>
-      </div>
-    </div>
+    </AuthShell>
   );
 }

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "@/components/ui/toaster";
+import ReactQueryProvider from "@/providers/QueryClientProvider";
+import { AuthProvider } from "@/providers/auth-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,7 +17,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Vouch - A trusted payment layer for social commerce",
-  description: "Vouch is a trusted payment layer for social commerce, providing secure escrow, instant payouts, and zero disputes.",
+  description:
+    "Vouch is a trusted payment layer for social commerce, providing secure escrow, instant payouts, and zero disputes.",
 };
 
 export default function RootLayout({
@@ -23,11 +27,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className="bg-background text-foreground">
+        <ReactQueryProvider>
+          <AuthProvider>
+            {children}
+            <Toaster />
+          </AuthProvider>
+        </ReactQueryProvider>
+      </body>
     </html>
   );
 }

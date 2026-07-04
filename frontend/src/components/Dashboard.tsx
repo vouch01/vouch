@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useDashboard } from "@/hooks/use-dashboard";
 import { useState } from "react";
 import { AppShell } from "./app-shell";
 import { Button } from "./ui/button";
-import { Order } from "@/hooks/use-orders";
+import { Order } from "@/types/orders";
 import { Badge } from "@/components/ui/badge";
 
 const Dashboard = () => {

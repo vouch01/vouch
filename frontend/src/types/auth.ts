@@ -1,11 +1,12 @@
+import { Vendor } from "./vendor"
+
 export interface LoginDto {
   email: string
   password: string
 }
 
 export interface SignupDto {
-  firstName: string
-  lastName: string
+  business_name: string
   email: string
   password: string
 }
@@ -15,7 +16,7 @@ export interface VerifyOtpDto {
   otp: string
 }
 
-export interface ForgotPasswordDto {
+export interface GenerateOtpDto {
   email: string
 }
 
@@ -26,16 +27,9 @@ export interface ResetPasswordDto {
 }
 
 export interface AuthResponse {
-  success: boolean
-  message: string
-  data: {
-    accessToken: string
-    refreshToken: string
-    user: {
-      id: string
-      firstName: string
-      lastName: string
-      email: string
-    }
-  }
+    status: number
+    success: boolean
+    message: string
+    token: string
+    data: Vendor
 }

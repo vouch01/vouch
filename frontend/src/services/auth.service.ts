@@ -3,7 +3,7 @@ import {
   LoginDto,
   SignupDto,
   VerifyOtpDto,
-  ForgotPasswordDto,
+  GenerateOtpDto,
   ResetPasswordDto,
   AuthResponse,
 } from "@/types/auth"
@@ -20,12 +20,12 @@ export const authService = {
   },
 
   verifyOtp: async (payload: VerifyOtpDto) => {
-    const { data } = await api.post("/verify-otp", payload)
+    const { data } = await api.post("/verify", payload)
     return data
   },
 
-  forgotPassword: async (payload: ForgotPasswordDto) => {
-    const { data } = await api.post("/forget-password", payload)
+  generateOtp: async (payload: GenerateOtpDto) => {
+    const { data } = await api.post("/otp", payload)
     return data
   },
 

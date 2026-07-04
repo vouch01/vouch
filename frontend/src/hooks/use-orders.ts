@@ -1,18 +1,5 @@
+import { Order, OrderStatus } from "@/types/orders";
 import { useState, useCallback } from "react";
-
-export type OrderStatus = "PENDING" | "PAID_IN_ESCROW" | "DISPATCHED" | "SETTLED" | "DISPUTED";
-
-export interface Order {
-  id: string;
-  item: string;
-  amount: number;
-  buyer: string;
-  status: OrderStatus;
-  timeAgo: string;
-  dateCreated: string;
-  deliveryAddress: string;
-  notes?: string;
-}
 
 const INITIAL_ORDERS: Order[] = [
   { id: 'ORD-001234', status: 'PENDING', item: 'iPhone 14 Pro (256GB)', amount: 500000, buyer: '080x xxx xxxx', deliveryAddress: 'Lekki, Lagos', dateCreated: 'Dec 15, 2024', timeAgo: '2m ago', notes: '' },
