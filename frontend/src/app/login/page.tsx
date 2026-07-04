@@ -10,6 +10,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import AuthShell from "@/components/auth-shell";
 
 const loginSchema = z.object({
   email: z.string().email("Enter a valid email address"),
@@ -33,18 +34,8 @@ export default function Login() {
   }
 
   return (
-    <div
-      className="min-h-screen relative flex items-center justify-end"
-      style={{
-        backgroundImage: "url('/images/auth-bg.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <div className="absolute inset-0 bg-black/40" />
-
-      <div className="relative z-10 w-full max-w-md mx-6 lg:mr-20 my-10">
-        <div className="bg-white rounded-2xl shadow-2xl px-10 py-10">
+    <AuthShell>
+      <div className="bg-white rounded-2xl shadow-2xl px-10 py-10">
           <div className="flex flex-col items-center mb-7">
             {/* <img src={vouchLogo} alt="Vouch" className="h-8 w-auto mb-3" /> */}
             <Image 
@@ -149,7 +140,6 @@ export default function Login() {
             </button>
           </p>
         </div>
-      </div>
-    </div>
+    </AuthShell>
   );
 }

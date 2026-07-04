@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import AuthShell from "@/components/auth-shell";
 
 const OTP_LENGTH = 6;
 const RESEND_SECONDS = 3 * 60;
@@ -92,18 +93,8 @@ export default function VerifyOtp() {
   }
 
   return (
-    <div
-      className="min-h-screen relative flex items-center justify-end"
-      style={{
-        backgroundImage: "url('/images/auth-bg.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <div className="absolute inset-0 bg-black/40" />
-
-      <div className="relative z-10 w-full max-w-md mx-6 lg:mr-20 my-10">
-        <div className="bg-white rounded-2xl shadow-2xl px-10 py-10">
+    <AuthShell>
+      <div className="bg-white rounded-2xl shadow-2xl px-10 py-10">
           <div className="flex flex-col items-center mb-7">
             {/* <img src={vouchLogo} alt="Vouch" className="h-8 w-auto mb-3" /> */}
             <Image
@@ -209,7 +200,6 @@ export default function VerifyOtp() {
             Back to Login
           </button>
         </div>
-      </div>
-    </div>
+    </AuthShell>
   );
 }

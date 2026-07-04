@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AppShell } from "@/components/app-shell";
 import { CreateOrderModal, OrderDetailModal, RiderLinkModal } from "@/components/modals";
-import { Order, useOrders } from "@/hooks/use-orders";
+import { useOrders } from "@/hooks/use-orders";
+import { Order } from "@/types/orders";
 
 export default function VendorDashboard() {
   const { orders } = useOrders();
