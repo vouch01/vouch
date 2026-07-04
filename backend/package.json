@@ -12,6 +12,9 @@
     "dev": "tsx watch  src/index.ts",
     "db-check": "npx tsx src/__tests__/test-connection.ts"
   },
+"engines": {
+  "node": ">=20.0.0 <22.0.0"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
