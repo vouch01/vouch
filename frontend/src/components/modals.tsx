@@ -25,8 +25,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
-import { Order, useOrders } from "@/hooks/use-orders";
+import { useToast } from "@/components/ui/use-toast";
+import { useOrders } from "@/hooks/use-orders";
+import { Order } from "@/types/orders";
 
 export function CreateOrderModal({ open, onOpenChange }: { open: boolean, onOpenChange: (o: boolean) => void }) {
   const [step, setStep] = useState(1);
