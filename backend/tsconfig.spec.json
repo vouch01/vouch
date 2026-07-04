@@ -6,7 +6,6 @@
     "types": ["node", "jest"],
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "ignoreDeprecations": "6.0"
   },
   "include": ["src"]
 }

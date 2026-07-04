@@ -11,12 +11,12 @@ app.use(express.json())
 app.use(routes)
 
 
-app.get("/",function(req, res){
+app.get("/",function(req:any, res:any){
     res.send("this route works")
 })
 
 
-app.get('/health',function(req, res){
+app.get('/health',function(req:any, res:any){
   res.json({ status: 'ok', timestamp: new Date() });
 });
 

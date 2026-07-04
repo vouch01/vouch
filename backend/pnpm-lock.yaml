@@ -20,18 +20,12 @@ importers:
       express:
         specifier: ^5.2.1
         version: 5.2.1
-      jest:
-        specifier: ^30.4.2
-        version: 30.4.2(@types/node@26.0.1)(ts-node@10.9.2(@types/node@26.0.1)(typescript@6.0.3))
       jsonwebtoken:
         specifier: ^9.0.3
         version: 9.0.3
       pg:
         specifier: ^8.22.0
         version: 8.22.0
-      ts-jest:
-        specifier: ^29.4.11
-        version: 29.4.11(@babel/core@7.29.7)(@jest/transform@30.4.1)(@jest/types@30.4.1)(babel-jest@30.4.1(@babel/core@7.29.7))(jest-util@30.4.1)(jest@30.4.2(@types/node@26.0.1)(ts-node@10.9.2(@types/node@26.0.1)(typescript@6.0.3)))(typescript@6.0.3)
     devDependencies:
       '@types/bcrypt':
         specifier: ^6.0.0
@@ -66,9 +60,15 @@ importers:
       express-rate-limit:
         specifier: ^8.5.2
         version: 8.5.2(express@5.2.1)
+      jest:
+        specifier: ^30.4.2
+        version: 30.4.2(@types/node@26.0.1)(ts-node@10.9.2(@types/node@26.0.1)(typescript@6.0.3))
       supertest:
         specifier: ^7.2.2
         version: 7.2.2
+      ts-jest:
+        specifier: ^29.4.11
+        version: 29.4.11(@babel/core@7.29.7)(@jest/transform@30.4.1)(@jest/types@30.4.1)(babel-jest@30.4.1(@babel/core@7.29.7))(jest-util@30.4.1)(jest@30.4.2(@types/node@26.0.1)(ts-node@10.9.2(@types/node@26.0.1)(typescript@6.0.3)))(typescript@6.0.3)
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@26.0.1)(typescript@6.0.3)
@@ -1372,8 +1372,8 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  electron-to-chromium@1.5.385:
-    resolution: {integrity: sha512-78sa/M08MNAYHQfjoWMvOlKQqZ0ElhSm/L5HNUc96VZ3b+KvDVnngFm8sYQy0XrhTRgAhggHr5abA7yTvRdo4Q==}
+  electron-to-chromium@1.5.387:
+    resolution: {integrity: sha512-TaxwufTFDufvPEoXdhwVrA3UdFWBeWGkYoJ1K8ldF1xe6gKfth6iRNS5lTQ5JPNOHdGQm8PT1QYKUqFLCiUefQ==}
 
   emittery@0.13.1:
     resolution: {integrity: sha512-DeWwawk6r5yR9jFgnDKYt4sLS0LmHJJi3ZOnb5/JdbYwj3nW+FxQnHIjhBKz8YLC7oRNPVM9NQ47I3CVx34eqQ==}
@@ -3412,7 +3412,7 @@ snapshots:
     dependencies:
       baseline-browser-mapping: 2.10.41
       caniuse-lite: 1.0.30001800
-      electron-to-chromium: 1.5.385
+      electron-to-chromium: 1.5.387
       node-releases: 2.0.50
       update-browserslist-db: 1.2.3(browserslist@4.28.4)
 
@@ -3557,7 +3557,7 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  electron-to-chromium@1.5.385: {}
+  electron-to-chromium@1.5.387: {}
 
   emittery@0.13.1: {}
 
