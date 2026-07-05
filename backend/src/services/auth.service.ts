@@ -35,9 +35,6 @@ export const createVendor = async (vendorData: VendorInputs) => {
         business_name,
         email,
         password_hash: passwordHash,
-        bank_code: "",
-        bank_account_number: "",
-        bank_account_name: "", 
       })
       .returning();
 
@@ -96,7 +93,8 @@ export const generateOtp = async (email: string) => {
       .select()
       .from(vendors)
       .where(eq(vendors.email, email));
-    if (!existingVendor.length) {
+
+  if (!existingVendor.length) {
       return { status: 404, success: false, message: "Account doesnt exist" };
     }
     const otp = await generateUniqueOtp(6);
@@ -107,6 +105,7 @@ export const generateOtp = async (email: string) => {
       name:name,
       otp:otp
     })
+    console.log('Reset job queued');
 
     const otpHash = await bcrypt.hash(otp, 10);
 
@@ -124,6 +123,9 @@ export const generateOtp = async (email: string) => {
       })
       .returning();
 
+      if (process.env.NODE_ENV === 'test') {
+      return { status: 200, success: true, message: "OTP generated successfully", otp }
+    }
     return {
       status: 200,
       success: true,
