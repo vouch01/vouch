@@ -5,6 +5,7 @@ import { db } from "../db/index.js";
 import { vendors, orders, webhook_events, otp_tokens } from "../db/schema.js";
 import { generateUniqueOtp } from "../utils/uuid.js";
 import {sendPasswordResetOtp} from "../services/mail.service.js"
+import {emailQueue} from "../lib/queue.js"
 
 interface VendorInputs {
   business_name: string;
@@ -101,7 +102,11 @@ export const generateOtp = async (email: string) => {
     const otp = await generateUniqueOtp(6);
     const name = existingVendor[0]!.business_name
     
-    await sendPasswordResetOtp({name, email, otp})
+    await emailQueue.add('password-reset', {
+      to:email,
+      name:name,
+      otp:otp
+    })
 
     const otpHash = await bcrypt.hash(otp, 10);
 
