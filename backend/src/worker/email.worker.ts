@@ -1,15 +1,14 @@
 import {Worker } from 'bullmq'
 import { connection}  from  "../lib/redis.js" 
-import { emailQueue } from '../lib/queue.js' 
-import { sendMail } from '../lib/mailer.js'
+import {sendPasswordResetOtp} from "../services/mail.service.js"
 
 const emailWorker  = new Worker ('email', async (job) => {
-    const {to, subject, html} =job.data
+    const {name, email, otp} =job.data
 
     switch(job.name){
         case 'verification':
         case 'password-reset':
-            await sendMail(to, subject, html)
+            await sendPasswordResetOtp ({name, email, otp})
             break;
             default:
                 throw new Error (`Unknown job type: ${job.name}`)
