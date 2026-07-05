@@ -9,6 +9,7 @@ const emailWorker  = new Worker ('email', async (job) => {
         case 'verification':
         case 'password-reset':
             await sendPasswordResetOtp ({name, email, otp})
+            console.log('sendPasswordResetOtp job processed')
             break;
             default:
                 throw new Error (`Unknown job type: ${job.name}`)
