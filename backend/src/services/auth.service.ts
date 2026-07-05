@@ -4,6 +4,7 @@ import { eq , and , desc } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { vendors, orders, webhook_events, otp_tokens } from "../db/schema.js";
 import { generateUniqueOtp } from "../utils/uuid.js";
+import {sendPasswordResetOtp} from "../services/mail.service.js"
 
 interface VendorInputs {
   business_name: string;
@@ -98,6 +99,9 @@ export const generateOtp = async (email: string) => {
       return { status: 404, success: false, message: "Account doesnt exist" };
     }
     const otp = await generateUniqueOtp(6);
+    const name = existingVendor[0]!.business_name
+    
+    await sendPasswordResetOtp({name, email, otp})
 
     const otpHash = await bcrypt.hash(otp, 10);
 
