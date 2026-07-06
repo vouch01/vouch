@@ -1,3 +1,5 @@
+console.log('Email worker file loaded')
+
 import {Worker } from 'bullmq'
 import { connection}  from  "../lib/redis.js" 
 import {sendPasswordResetOtp} from "../services/mail.service.js"
