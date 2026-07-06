@@ -1,6 +1,6 @@
 import { accessToken } from "./token.service.js";
 import bcrypt from "bcrypt";
-import { eq , and , desc } from "drizzle-orm";
+import { eq , and , desc, isNull } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { vendors, orders, webhook_events, otp_tokens } from "../db/schema.js";
 import { generateUniqueOtp } from "../utils/uuid.js";
@@ -22,7 +22,7 @@ export const createVendor = async (vendorData: VendorInputs) => {
     const existingVendor = await db
       .select()
       .from(vendors)
-      .where(eq(vendors.email, email));
+      .where(and(eq(vendors.email, email),isNull(vendors.deleted_at)))
     if (existingVendor.length > 0) {
       return { status: 409, success: false, message: "user already Exists" };
     }
