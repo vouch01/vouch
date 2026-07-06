@@ -1,4 +1,4 @@
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, inArray, isNull } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { vendors, orders, webhook_events, otp_tokens } from "../db/schema.js";
 
@@ -13,7 +13,7 @@ interface VendorInputs {
 export const retrieveVendorById = async (id: string) => {
   try {
     const vendor = await db.query.vendors.findFirst({
-      where: eq(vendors.id, id),
+      where: and(eq(vendors.id, id), isNull(vendors.deleted_at)),
     });
     if (!vendor) {
       return { status: 404, success: false, message: "vendor not found" };
@@ -31,14 +31,13 @@ export const retrieveVendorById = async (id: string) => {
   }
 };
 
-
 export const updateVendorDetails = async (
   vendorData: VendorInputs,
   id: string,
 ) => {
   try {
     const existingVendor = await db.query.vendors.findFirst({
-      where: eq(vendors.id, id),
+      where: and(eq(vendors.id, id), isNull(vendors.deleted_at)),
     });
     if (!existingVendor) {
       return { status: 404, success: false, message: "vendor not found" };
@@ -72,6 +71,49 @@ export const updateVendorDetails = async (
     };
   } catch (err: any) {
     console.error("Error occurred while updating vendor details:", err.message);
+    return { status: 500, success: false, message: err.message };
+  }
+};
+
+export const deleteVendor = async (id: string) => {
+  try {
+    const existingVendor = await db.query.vendors.findFirst({
+      where: eq(vendors.id, id),
+    });
+    if (!existingVendor) {
+      return { status: 404, success: false, message: "vendor not found" };
+    }
+
+    const activeOrders = await db.query.orders.findFirst({
+      where: and(
+        eq(orders.vendor_id, id),
+        inArray(orders.status, [
+          "PENDING_PAYMENT",
+          "PAID_IN_ESCROW",
+          "DISPATCHED",
+        ]),
+      ),
+    });
+
+    if (activeOrders) {
+      return {
+        status: 409,
+        success: false,
+        message: "Cannot delete vendor with active orders",
+      };
+    }
+    await db
+      .update(vendors)
+      .set({ deleted_at: new Date() })
+      .where(eq(vendors.id, id));
+
+    return {
+      status: 200,
+      success: true,
+      message: "Vendor deleted successfully",
+    };
+  } catch (err: any) {
+    console.error("Error occurred while deleting vendor details:", err.message);
     return { status: 500, success: false, message: err.message };
   }
 };
