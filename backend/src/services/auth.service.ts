@@ -101,9 +101,9 @@ export const generateOtp = async (email: string) => {
     const name = existingVendor[0]!.business_name
     
     await emailQueue.add('password-reset', {
-      to:email,
-      name:name,
-      otp:otp
+      name,
+      email,
+      otp
     })
     console.log('Reset job queued');
 
