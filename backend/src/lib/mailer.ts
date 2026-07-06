@@ -15,6 +15,8 @@ export const transporter = nodemailer.createTransport({
   }
 });
 
+
+if (process.env.NODE_ENV !== 'test') {
 transporter.verify()
 .then(()=>{
     console.log('transporter is ready to send messages')
@@ -22,6 +24,7 @@ transporter.verify()
 .catch((error:any)=>{
     console.log('transporter failed to send messages', error)
 })
+}
 
 export const sendMail = async (to: string, subject: string, html: string) => {
   await transporter.sendMail({
