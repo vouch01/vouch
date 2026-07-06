@@ -33,6 +33,22 @@ describe("Profile actions", () => {
     expect(res.body.message).toContain("successfully");
     expect(res.body.data.business_name).toBe("Test Business");
     expect(res.body.data).toBeDefined()
-    
   })
+
+  it("returns status code 200 if vendor is retrieved successfully", async() =>{
+    const res = await request(app)
+    .patch("/v1/profile/update")
+     .set("Authorization", `Bearer ${token}`)
+     .send({
+        bank_account_number: '3199777308',
+        bank_code:"011",
+        bank_account_name: 'testthisname'
+     })   
+
+     expect(res.statusCode).toEqual(200);
+    expect(res.body.message).toContain("successfully");
+    expect(res.body.data.bank_account_name).toBe("testthisname");
+    expect(res.body.data).toBeDefined()
+  })
+
 })
