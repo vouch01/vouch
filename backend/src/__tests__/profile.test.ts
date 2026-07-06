@@ -51,4 +51,13 @@ describe("Profile actions", () => {
     expect(res.body.data).toBeDefined()
   })
 
+  it("returns status code 200 if vendor is deleted successfully", async() =>{
+    const res = await request(app)
+    .delete("/v1/profile/delete")
+     .set("Authorization", `Bearer ${token}`)
+
+     expect(res.statusCode).toEqual(200);
+    expect(res.body.message).toContain("successfully");
+  })
+
 })
