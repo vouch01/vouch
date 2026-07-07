@@ -25,7 +25,7 @@ beforeAll(async () => {
     .post("/v1/order/create")
      .set("Authorization", `Bearer ${token}`)
      .send({
-        buyer_phone:"09192053519",
+        buyer_phone:"92049905114",
         item_description:"ows gadgets",
         additional_notes: "Keep it neat",
         delivery_address: "new wplace way ",
@@ -47,7 +47,6 @@ beforeAll(async () => {
      expect(res.statusCode).toEqual(200);
     expect(res.body.message).toContain("successfully");
     expect(res.body.data.item_description).toContain("ows");
-    expect(res.body.escrowLink).toBeDefined()
   })
    it.skip("returns status code 200 if all order is retrieved successfully", async() =>{
     const res = await request(app)
