@@ -8,6 +8,23 @@
 import { getValidAccessToken } from "../utils/nomba.js";
 import axios from 'axios'
 
+interface SubAccountTransferInput{
+    amount:number,
+    accountNumber:string,
+    accountName:string,
+    bankCode:string,
+    merchantTxRef:string,
+    senderName:string,
+    narration:string
+}
+interface SubAccountTransferResult {
+  code: string
+  description: string
+  data:any,
+  status:string,
+  type:string
+}
+
 export const Payment = {
     async lookupBankAccount(vendor_account_number: string, bankCode:string):Promise<{}>{
         const token = await getValidAccessToken()
@@ -37,7 +54,7 @@ export const Payment = {
     /*
     Creates virtual account for vouch's escrow wallet
     */
-  async createVirtualAccountForSubaccount(
+  async createVirtualAccountForSubAccount(
     virtual_account_ref: string,
     expected_amount: number,
     expires_at: Date,
@@ -62,6 +79,95 @@ export const Payment = {
 
     const {bankName, createdAt, bankAccountName} = data
 
-    return{ bankName, createdAt, bankAccountName, code, description}
+    return{ bankName, data, createdAt, bankAccountName, code, description}
+  },
+
+  /*
+    Transfer Funds from sub account to desired bank
+    */
+
+  async  transferFundsFromSubAccountToBank(bankTransferDetails:SubAccountTransferInput):Promise<SubAccountTransferResult> {
+    const {
+        amount,
+        accountNumber,
+        accountName,
+        bankCode,
+    merchantTxRef,
+    senderName,
+    narration
+    }= bankTransferDetails
+    const token = await getValidAccessToken()
+    const subAccountId = process.env.NOMBA_SUB_ACCOUNT_ID 
+
+
+    const response = await axios.post(`https://api.nomba.com/v2/transfers/bank/${subAccountId}`,{
+        amount,
+        accountNumber,
+        accountName,
+        bankCode,
+    merchantTxRef,
+    senderName,
+    narration
+    },{
+        headers:{
+            Authorization: `Bearer ${token}`,
+            accountId: process.env.NOMBA_ACCOUNT_ID,
+        },
+    })  
+
+
+    const { code, data, description} = response.data
+    const { status, type} =data
+
+    return{ code, data,status, type ,description} 
+  },
+
+  /*
+    Requeries transaction from sub account 
+    */
+
+  async FetchTransactionOnSubAccount():Promise<{}> {
+    const token = await getValidAccessToken()
+    const subAccountId = process.env.NOMBA_SUB_ACCOUNT_ID 
+    const dateFrom = new Date(Date.now() - 15 * 60 * 1000) 
+  .toISOString()
+  .slice(0, 19) // strips milliseconds and 'Z', to match "yyyy-MM-ddTHH:mm:ss"
+
+const dateTo = new Date().toISOString().slice(0, 19)
+    const response = await axios.post(`https://api.nomba.com/v1/transactions/accounts/${subAccountId}?limit=1&dateFrom=${dateFrom}&dateTo=${dateTo}`,{
+    },{
+        headers:{
+            Authorization: `Bearer ${token}`,
+            accountId: process.env.NOMBA_ACCOUNT_ID,
+        },
+    })  
+
+    const { code, data:{results, cursor} , description} = response.data
+    
+
+    return{ results, description, code, cursor}
+  },
+
+   /*
+    Requeries transaction status by sessionID 
+    */
+
+  async confirmTransactionStatus(
+    sessionId: number,
+  ):Promise<{}> {
+    const token = await getValidAccessToken()
+    const response = await axios.post(`https://api.nomba.com/v1/transactions/requery/${sessionId}`,{
+    },{
+        headers:{
+            Authorization: `Bearer ${token}`,
+            accountId: process.env.NOMBA_ACCOUNT_ID,
+        },
+    })
+
+    const { code, data , description} = response.data
+
+    const {status, amount, type, timeCreated} = data
+
+    return{ status, data, amount, type, timeCreated, description, code}
   }
 };

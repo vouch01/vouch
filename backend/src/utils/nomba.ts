@@ -76,3 +76,17 @@ try{
      throw new Error ("nomba authentication failed")
 }
 }
+
+
+export const nairaToKobo= (nairaAmount: number| string): number => {
+    const parsed = typeof nairaAmount === 'string' ? parseFloat(nairaAmount) : nairaAmount;
+
+    if (isNaN(parsed) || parsed< 0) {
+        throw new Error("Invalid amount received") ;
+    } 
+    return Math.round(parsed * 100)
+}
+
+export const koboToNombaFormat:any = (koboAmount:number):string => {
+    return (koboAmount/100) .toFixed(2)
+}
