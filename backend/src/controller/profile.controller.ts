@@ -1,4 +1,5 @@
-import {retrieveVendorById, updateVendorDetails, deleteVendor} from '../services/profile.service.js'
+import { handleNombaError } from '../lib/nombaError.js'
+import {retrieveVendorById, updateVendorDetails, deleteVendor, verifyBankDetails} from '../services/profile.service.js'
 
 export const RetrieveVendorController = async (req:any, res:any) =>{
     try{
@@ -24,6 +25,19 @@ export const UpdateDetailsController = async (req:any, res:any) =>{
            return res.status(updatedVendor.status).json(updatedVendor)
     }catch(error){
         return res.status(500).json({status:500,success:false,message: "internal server error"})
+    }
+}
+
+export const VerifyBankDetailsController = async (req:any, res:any) =>{
+    try{
+        const {bankCode, vendor_account_number} = req.body
+        const details  = await verifyBankDetails(bankCode,vendor_account_number )
+        if(!details.success){
+            return res.status(details.status).json(details)
+        }
+           return res.status(details.status).json(details)
+    }catch(err){
+        return handleNombaError(err)
     }
 }
 
