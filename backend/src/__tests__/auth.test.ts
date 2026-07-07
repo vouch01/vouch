@@ -15,6 +15,11 @@ const TEST_PASSWORD = "Test1234!"
 //   });
 // });
 
+beforeEach(() => {
+  const now = new Date().toISOString();
+  console.log(`Running test at: ${now}`);
+});
+
 describe.skip("Auth flow ", () => {
   it("returns status code 201 if user is created successfully", async () => {
     const res = await request(app).post("/v1/auth/signup").send({
