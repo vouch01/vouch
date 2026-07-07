@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import AuthShell from "@/components/auth-shell";
+import { useGenerateOtp } from "@/hooks/use-auth";
 
 const schema = z.object({
   email: z.string().email("Enter a valid email address"),
@@ -26,6 +27,7 @@ type Values = z.infer<typeof schema>;
 
 export default function ForgotPassword() {
   const router = useRouter();
+  const { mutate: generateOtp, isPending } = useGenerateOtp();
 
   const form = useForm<Values>({
     resolver: zodResolver(schema),
@@ -33,8 +35,11 @@ export default function ForgotPassword() {
   });
 
   function onSubmit(values: Values) {
-    console.log(values);
-    router.push("/verify-otp");
+    generateOtp(values, {
+      onSuccess: () => {
+        router.push("/verify-otp");
+      },
+    });
   }
 
   return (
@@ -82,6 +87,7 @@ export default function ForgotPassword() {
                       autoComplete="email"
                       className="rounded-lg border-border h-11 text-sm"
                       data-testid="input-email"
+                      disabled={isPending}
                     />
                   </FormControl>
                   <FormMessage />
@@ -93,8 +99,9 @@ export default function ForgotPassword() {
               type="submit"
               className="w-full h-11 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium cursor-pointer"
               data-testid="button-continue"
+              disabled={isPending}
             >
-              Continue
+              {isPending ? "Sending OTP..." : "Continue"}
             </Button>
           </form>
         </Form>

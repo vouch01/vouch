@@ -14,6 +14,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   loading: boolean;
   logout: () => void;
+  login: (token: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -33,6 +34,11 @@ export function AuthProvider({
     setLoading(false);
   }, []);
 
+  const login = (token: string) => {
+  localStorage.setItem("accessToken", token);
+  setAuthenticated(true);
+};
+
   const logout = () => {
     localStorage.removeItem("accessToken");
     setAuthenticated(false);
@@ -43,6 +49,7 @@ export function AuthProvider({
       value={{
         loading,
         isAuthenticated,
+        login,
         logout,
       }}
     >

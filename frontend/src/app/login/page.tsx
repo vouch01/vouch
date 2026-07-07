@@ -11,6 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import AuthShell from "@/components/auth-shell";
+import { useLogin } from "@/hooks/use-auth";
 
 const loginSchema = z.object({
   email: z.string().email("Enter a valid email address"),
@@ -22,6 +23,7 @@ type LoginValues = z.infer<typeof loginSchema>;
 export default function Login() {
     const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const { mutate: login, isPending } = useLogin();
 
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -29,8 +31,17 @@ export default function Login() {
   });
 
   function onSubmit(values: LoginValues) {
-    console.log(values);
-    router.push("/");
+    login(
+      {
+        email: values.email,
+        password: values.password,
+      },
+      {
+        onSuccess: () => {
+          router.replace("/vendor/dashboard");
+        },
+      }
+    );
   }
 
   return (
@@ -70,6 +81,7 @@ export default function Login() {
                         autoComplete="email"
                         className="rounded-lg border-border h-11 text-sm"
                         data-testid="input-email"
+                        disabled={isPending}
                       />
                     </FormControl>
                     <FormMessage />
@@ -92,6 +104,7 @@ export default function Login() {
                           autoComplete="current-password"
                           className="rounded-lg border-border h-11 text-sm pr-10"
                           data-testid="input-password"
+                          disabled={isPending}
                         />
                         <button
                           type="button"
@@ -123,8 +136,10 @@ export default function Login() {
                 type="submit"
                 className="w-full h-11 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium"
                 data-testid="button-login"
+                disabled={isPending}
+
               >
-                Login
+                {isPending ? "Logging in..." : "Login"}
               </Button>
             </form>
           </Form>
