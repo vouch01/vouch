@@ -3,6 +3,7 @@ import { db } from "../db/index.js";
 import { vendors, orders, webhook_events, otp_tokens } from "../db/schema.js";
 import { generateUniqueToken } from "../utils/uuid.js";
 import crypto from "crypto";
+import { date } from "drizzle-orm/mysql-core";
 
 interface OrderInputs {
   vendor_id: string;
@@ -21,7 +22,7 @@ type orderStatus =
   | "EXPIRED"
   | "REFUNDED";
 
-const baseUrl = "https://vouch-test.vercel.app";
+const baseUrl = process.env.BASE_URL
 
 export const createOrder = async (orderData: OrderInputs, vendor_id:string) => {
   try {
@@ -83,3 +84,67 @@ export const createOrder = async (orderData: OrderInputs, vendor_id:string) => {
     return { status: 500, success: false, message: err.message };
   }
 };
+
+
+
+export const getAllOrders = async () =>{
+    try{
+    const orderList = await db.select().from(orders)
+    const existingOrders =orderList.filter(order => {
+        return order.deleted_at === null
+    } )
+    return{
+        status:200,
+        success:true,
+        data:existingOrders,
+        message: "Orders retrieved successfully"
+    }
+}catch (err: any) {
+    console.error("Error occurred while creating order:", err.message);
+    return { status: 500, success: false, message: err.message };
+  }
+}
+
+
+export const getOrderById = async (vendor_id:string,id:string) =>{
+    try{
+    const order = await db.query.orders.findFirst({
+        where: and(eq(orders.vendor_id, vendor_id), eq(orders.id, id))
+    })
+    if (!order || order.deleted_at !== null){
+        return {status:404, success:false, message:  "Order not found"}
+    }
+    return{
+        status:200,
+        success:true,
+        data:order,
+        message: "Order retrieved successfully"
+    }
+}catch (err: any) {
+    console.error("Error occurred while creating order:", err.message);
+    return { status: 500, success: false, message: err.message };
+  }
+}
+
+export const deleteOrderById = async(vendor_id:string, id:string) =>{
+    try{
+        const existingOrder = await db.query.orders.findFirst({
+            where: and(eq(orders.id, id), eq(orders.vendor_id, vendor_id))
+        })
+        if(!existingOrder){
+            return { status: 404, success: false, message: "order not found" };
+        }
+        await db.update(orders)
+        .set({ deleted_at: new Date() })
+      .where(eq(orders.id, id));
+
+      return {
+      status: 200,
+      success: true,
+      message: "Order deleted successfully",
+      }
+    }catch (err: any) {
+    console.error("Error occurred while deleting order:", err.message);
+    return { status: 500, success: false, message: err.message };
+  }
+}
