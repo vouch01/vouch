@@ -26,9 +26,9 @@ export const vendors = pgTable("vendors", {
   business_name: t.text("business_name").notNull(),
   email: t.text("email").notNull().unique(),
   password_hash: t.text("password_hash").notNull(),
-  bank_code: t.text("bank_code").notNull(),
-  bank_account_number: t.text("bank_account_number").notNull(),
-  bank_account_name: t.text("bank_account_name").notNull(),
+  bank_code: t.text("bank_code"),
+  bank_account_number: t.text("bank_account_number"),
+  bank_account_name: t.text("bank_account_name"),
   ...timestamps
 });
 
@@ -67,7 +67,7 @@ export const webhook_events = pgTable("webhook_events", {
 export const otp_tokens = pgTable("otp_tokens", {
   id: t.uuid("id").primaryKey().defaultRandom(),
   vendor_id: t.uuid("vendor_id").references(() => vendors.id).notNull(),
-  verified:t.boolean("is_active").default(false),
+  verified:t.boolean("verified").default(false),
   otp_token: t.varchar("otp_token", {length: 255}),
   status: otpTokenStatusEnum("status").default("UNUSED").notNull(),
   expires_at: t.timestamp("expires_at").notNull(),

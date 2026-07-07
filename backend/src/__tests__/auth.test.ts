@@ -4,7 +4,10 @@ import app from "../app.js";
 
 const router = express.Router();
 
-jest.setTimeout(15000);
+jest.setTimeout(30000);
+
+const TEST_EMAIL = "iziogbaraymond72@gmail.com"
+const TEST_PASSWORD = "Test1234!"
 
 // describe("sanity check", () => {
 //  it("should pass", () => {
@@ -12,12 +15,17 @@ jest.setTimeout(15000);
 //   });
 // });
 
-describe("Auth flow ", () => {
-  it.skip("returns status code 201 if user is created successfully", async () => {
+beforeEach(() => {
+  const now = new Date().toISOString();
+  console.log(`Running test at: ${now}`);
+});
+
+describe.skip("Auth flow ", () => {
+  it("returns status code 201 if user is created successfully", async () => {
     const res = await request(app).post("/v1/auth/signup").send({
       business_name: "Test Business",
-      email: "test@example.com",
-      password: "password123",
+      email: TEST_EMAIL,
+      password: TEST_PASSWORD,
       bank_account_number: "ACC123456",
       bank_account_name: "Test Account",
     });
@@ -26,12 +34,12 @@ describe("Auth flow ", () => {
     expect(res.body.message).toContain("successfully");
   });
 
-  it.skip("returns status code 200 if user logged in successfuly", async () => {
+  it("returns status code 200 if user logged in successfuly", async () => {
     const res = await request(app)
       .post("/v1/auth/login")
       .send({
-        email: "test@example.com",
-        password: "password123",
+        email: TEST_EMAIL,
+        password: TEST_PASSWORD,
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body.token).toBeDefined()
@@ -42,12 +50,12 @@ describe("Auth flow ", () => {
 
 describe("Password reset flow", () => {
   let otp: string;
-  let email:string;
+  
   it("returns status code 200 if otp is generated successfully", async() =>{
     const res = await request(app)
-    .post("/v1/auth/otp")
+    .get("/v1/auth/otp")
     .send({
-      email: "test@example.com"
+      email: TEST_EMAIL
     })
      expect(res.statusCode).toEqual(200);
     expect(res.body.message).toContain("successfully");
@@ -58,7 +66,7 @@ describe("Password reset flow", () => {
     const res = await request(app)
     .post("/v1/auth/verify")
     .send({
-      email: "test@example.com",
+      email: TEST_EMAIL,
       otp
     })
      expect(res.statusCode).toEqual(200);

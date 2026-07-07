@@ -10,14 +10,20 @@ const app: express.Application =express()
 const allowedOrigins= process.env.ALLOWED_ORIGINS?.split(',')  || []
 
 const corsOptions:any = {
-  origin: allowedOrigins,
+  origin: ( origin:string | undefined , callback: (err :Error | null, allow?:boolean) =>void) =>{
+    if(!origin || allowedOrigins.includes(origin)){
+      callback(null, true )
+    } else {
+      callback(new Error("Not allowed by CORS"))
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }
 
 app.use(cors(corsOptions))
-app.options('*', cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 
 
 app.use(express.json())

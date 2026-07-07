@@ -1,9 +1,11 @@
 import { accessToken } from "./token.service.js";
 import bcrypt from "bcrypt";
-import { eq , and , desc } from "drizzle-orm";
+import { eq , and , desc, isNull } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { vendors, orders, webhook_events, otp_tokens } from "../db/schema.js";
 import { generateUniqueOtp } from "../utils/uuid.js";
+import {sendPasswordResetOtp} from "../services/mail.service.js"
+import {emailQueue} from "../lib/queue.js"
 
 interface VendorInputs {
   business_name: string;
@@ -21,7 +23,7 @@ export const createVendor = async (vendorData: VendorInputs) => {
     const existingVendor = await db
       .select()
       .from(vendors)
-      .where(eq(vendors.email, email));
+      .where(and(eq(vendors.email, email),isNull(vendors.deleted_at)))
     if (existingVendor.length > 0) {
       return { status: 409, success: false, message: "user already Exists" };
     }
@@ -33,9 +35,6 @@ export const createVendor = async (vendorData: VendorInputs) => {
         business_name,
         email,
         password_hash: passwordHash,
-        bank_code: "",
-        bank_account_number: "",
-        bank_account_name: "", 
       })
       .returning();
 
@@ -94,10 +93,19 @@ export const generateOtp = async (email: string) => {
       .select()
       .from(vendors)
       .where(eq(vendors.email, email));
-    if (!existingVendor.length) {
+
+  if (!existingVendor.length) {
       return { status: 404, success: false, message: "Account doesnt exist" };
     }
     const otp = await generateUniqueOtp(6);
+    const name = existingVendor[0]!.business_name
+    
+    await emailQueue.add('password-reset', {
+      name,
+      email,
+      otp
+    })
+    console.log('Reset job queued');
 
     const otpHash = await bcrypt.hash(otp, 10);
 
@@ -115,6 +123,9 @@ export const generateOtp = async (email: string) => {
       })
       .returning();
 
+      if (process.env.NODE_ENV === 'test') {
+      return { status: 200, success: true, message: "OTP generated successfully", otp }
+    }
     return {
       status: 200,
       success: true,
