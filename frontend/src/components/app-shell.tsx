@@ -56,9 +56,9 @@ export function AppShell({ children, pageTitle, headerRight }: AppShellProps) {
   }
 
   const navItems = [
-    { name: "Dashboard", href: "/", icon: LayoutDashboard },
-    { name: "Orders", href: "/orders", icon: BsHandbag },
-    { name: "Settings", href: "/settings", icon: PiGear },
+    { name: "Dashboard", href: "/vendor/dashboard", icon: LayoutDashboard },
+    { name: "Orders", href: "/vendor/orders", icon: BsHandbag },
+    { name: "Settings", href: "/vendor/settings", icon: PiGear },
   ];
 
   return (

@@ -6,7 +6,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { authService } from "@/services/auth.service";
 import { QUERY_KEYS } from "@/lib/query-keys";
 import { useToast } from "../components/ui/use-toast";
-
 import type {
   LoginDto,
   SignupDto,
@@ -14,17 +13,18 @@ import type {
   GenerateOtpDto,
   ResetPasswordDto,
 } from "@/types/auth";
+import { useAuthContext } from "@/providers/auth-provider";
 
 export function useLogin() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { login } = useAuthContext();
 
   return useMutation({
     mutationFn: (payload: LoginDto) => authService.login(payload),
 
     onSuccess: (data) => {
-      localStorage.setItem("accessToken", data.token);
-
+      login(data.token);
       queryClient.setQueryData(QUERY_KEYS.USER, data.data);
 
       toast({

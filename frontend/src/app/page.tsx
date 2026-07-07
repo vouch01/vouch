@@ -1,161 +1,349 @@
-"use client"
+"use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAuthContext } from "@/providers/auth-provider";
+import Loading from "@/components/Loading";
+import { motion } from "framer-motion";
+import { ShieldCheck, ArrowRight, CheckCircle2, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { AppShell } from "@/components/app-shell";
-import { CreateOrderModal, OrderDetailModal, RiderLinkModal } from "@/components/modals";
-import { useOrders } from "@/hooks/use-orders";
-import { Order } from "@/types/orders";
+import Navbar from "@/components/Navbar";
+import Hero from "@/components/Hero";
+import HowItWorks from "@/components/How-it-works";
+import WhyVouch from "@/components/WhyVouch";
+import BuildFor from "@/components/BuildFor";
+import Image from "next/image";
+import { FaXTwitter, FaInstagram, FaLinkedin, FaRegCopyright } from "react-icons/fa6";
 
-export default function VendorDashboard() {
-  const { orders } = useOrders();
-  const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [orderModalOpen, setOrderModalOpen] = useState(false);
-  const [riderModalOpen, setRiderModalOpen] = useState(false);
-  const [riderOrderId, setRiderOrderId] = useState("");
+export default function Home() {
+  const router = useRouter();
 
-  const pendingOrders = orders.filter((o) => o.status === "PENDING").length;
-  const readyOrders = orders.filter((o) => o.status === "PAID_IN_ESCROW").length;
-  const settledOrders = orders.filter((o) => o.status === "SETTLED").length;
+  const { loading, isAuthenticated } = useAuthContext();
 
-  const recentOrders = orders.slice(0, 3);
-  const recentActivity = [
-    'Payment received for order ORD-001233 / 2 hours ago',
-    'Rider verification completed for order ORD-001232 / 5 hours ago',
-    'Payout released - ₦400,000 to your bank account / Yesterday at 2:30 PM'
-  ];
-
-  const handleOrderClick = (order: Order) => {
-    setSelectedOrder(order);
-    setOrderModalOpen(true);
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch(status) {
-      case 'PENDING': return <Badge variant="secondary" className="bg-gray-100 text-gray-700">Pending Payment</Badge>;
-      case 'PAID_IN_ESCROW': return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">Ready to Ship</Badge>;
-      case 'DISPATCHED': return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">Dispatched</Badge>;
-      case 'SETTLED': return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Settled</Badge>;
-      case 'DISPUTED': return <Badge className="bg-pink-100 text-pink-800 hover:bg-pink-100">Disputed</Badge>;
-      default: return <Badge variant="outline">{status}</Badge>;
+  useEffect(() => {
+    if (!loading && isAuthenticated) {
+      router.replace("/vendor/dashboard");
     }
-  };
+  }, [loading, isAuthenticated, router]);
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
-    <AppShell pageTitle="Dashboard">
-      <div className="max-w-6xl mx-auto space-y-8">
-        
-        {/* Section 1 - Welcome bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Welcome Back John!</h1>
-            <p className="text-sm text-muted-foreground mt-1">Manage your escrow transactions and track payments</p>
+    <div className="flex flex-col items-center justify-center min-h-screen w-full bg-background overflow-x-hidden font-sans relative">
+      {/* Sticky Navbar */}
+      <Navbar />
+
+      <main className="w-full">
+        {/* Hero Section */}
+        <Hero />
+
+        {/* HOW IT WORKS Section */}
+        <HowItWorks />
+
+        {/* WHY VOUCH Section */}
+        <WhyVouch />
+
+        {/* BUILD FOR Section */}
+        <BuildFor />
+
+        {/* SECURITY Section */}
+        <section id="security" className="py-24 bg-card border-t border-border">
+          <div className="container mx-auto px-4">
+            <div className="text-center max-w-2xl mx-auto mb-16">
+              <span className="text-primary font-bold tracking-wider text-xs uppercase mb-3 block">
+                Security
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                Bank-grade protection for every deal
+              </h2>
+              <p className="mt-4 text-muted-foreground text-lg">
+                Your funds never touch the vendor until you confirm delivery.
+                Every transaction is encrypted end-to-end.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+              {[
+                {
+                  Icon: Lock,
+                  title: "256-bit Encryption",
+                  desc: "All payment data is encrypted using the same standard as top banks.",
+                },
+                {
+                  Icon: ShieldCheck,
+                  title: "Escrow Vault",
+                  desc: "Funds are held in a regulated escrow account, not in transit.",
+                },
+                {
+                  Icon: CheckCircle2,
+                  title: "PIN Verification",
+                  desc: "A unique delivery PIN ensures only the real buyer can release funds.",
+                },
+              ].map(({ Icon, title, desc }, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: i * 0.1 }}
+                  className="text-center p-8 rounded-2xl border border-border"
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5">
+                    <Icon className="w-7 h-7 text-primary" strokeWidth={1.5} />
+                  </div>
+                  <h3 className="font-bold text-lg mb-2">{title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {desc}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
           </div>
-          <Button onClick={() => setCreateModalOpen(true)} className="shadow-sm">
-            + Create Order
-          </Button>
+        </section>
+
+        {/* FAQ Section */}
+        <section id="faq" className="py-24">
+          <div className="container mx-auto px-4">
+            <div className="text-center max-w-2xl mx-auto mb-16">
+              <span className="text-primary font-bold tracking-wider text-xs uppercase mb-3 block">
+                FAQ
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                Common questions
+              </h2>
+            </div>
+            <div className="max-w-2xl mx-auto space-y-4">
+              {[
+                {
+                  q: "How does Vouch protect my money?",
+                  a: "Funds are held in a regulated escrow vault and only released once you confirm the item arrived and matches what was ordered.",
+                },
+                {
+                  q: "How long does it take for a vendor to get paid?",
+                  a: "Instantly — the moment the buyer confirms delivery, the funds are released to the vendor's bank account.",
+                },
+                {
+                  q: "What if the item never arrives?",
+                  a: "Raise a dispute through Vouch. Our team mediates and, where applicable, refunds the buyer in full.",
+                },
+                {
+                  q: "Does Vouch work on WhatsApp and Instagram?",
+                  a: "Yes. Vendors generate a secure payment link that buyers can open from any browser — no app download required.",
+                },
+                {
+                  q: "Are there monthly fees?",
+                  a: "No. Vouch charges a small per-transaction fee only when a deal is completed. No subscriptions, no hidden costs.",
+                },
+              ].map(({ q, a }, i) => (
+                <details
+                  key={i}
+                  className="group border border-border rounded-xl p-6 cursor-pointer"
+                >
+                  <summary className="font-semibold text-foreground flex items-center justify-between list-none">
+                    {q}
+                    <ArrowRight className="w-4 h-4 text-muted-foreground shrink-0 ml-4 rotate-90 group-open:rotate-270 transition-transform" />
+                  </summary>
+                  <p className="mt-4 text-muted-foreground text-sm leading-relaxed">
+                    {a}
+                  </p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="py-24 bg-accent relative overflow-hidden">
+          {/* Decorative shapes */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl translate-y-1/3 -translate-x-1/3" />
+
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="max-w-4xl mx-auto bg-primary/5 rounded-3xl p-8 md:p-16 border border-primary/10 text-center md:text-left flex flex-col md:flex-row items-center gap-8 shadow-2xl shadow-primary/5 backdrop-blur-sm">
+              <div className="flex-1 items-center">
+                <span className="text-primary font-bold tracking-wider text-xs uppercase mb-3 flex items-center gap-2">
+                  <span>
+                    <ShieldCheck size={16} />
+                  </span>
+                  Ready to get started?
+                </span>
+                <h2 className="text-3xl md:text-4xl font-medium text-foreground mb-4">
+                  Start selling and buying with confidence.
+                </h2>
+                <p className="text-muted-foreground text-[12px] mb-2">
+                  Create your first escrow order in less than 2 minutes.
+                </p>
+              </div>
+              <div className="shrink-0 flex flex-col w-full md:w-auto gap-6">
+                <Button
+                  size="lg"
+                  className="w-full md:w-auto h-14 px-8 text-base bg-primary hover:bg-primary/90 text-white rounded-xl shadow-lg shadow-primary/25 group"
+                >
+                  Create Escrow Order
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
+                <p className="text-sm text-[#565656] font-medium">
+                  No monthly fees, pay only when you transact.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* Footer */}
+      <footer className="w-full px-12 pt-16 pb-8">
+        <div className="w-full px-4">
+          <div className="flex flex-col md:flex-row gap-8 justify-between w-full">
+            <div className="col-span-2 lg:col-span-2 w-full md:w-[18%]">
+              <Link href="/" className="flex items-center gap-2 mb-4">
+                <Image
+                  src={"/logos/vouch-logo.png"}
+                  alt="Vouch logo"
+                  width={100}
+                  height={100}
+                />
+              </Link>
+              <p className="text-[12px] text-muted-foreground mb-6">
+                The escrow platform that builds trust in every social commerce
+                transaction.
+              </p>
+              <div className="flex items-center gap-2">
+                {/* Social placeholders */}
+                <a
+                  href="https://instagram.com/vouchafrica"
+                  aria-label="Follow Vouch on LinkedIn"
+                  className="text-primary"
+                >
+                  <FaInstagram size={24} />
+                </a>
+                <a
+                  href="https://twitter.com/vouchafrica"
+                  aria-label="Follow Vouch on Twitter / X"
+                  className="text-primary"
+                >
+                  <FaXTwitter size={24}/>
+                </a>
+                <a
+                  href="https://linkedin.com/company/vouchafrica"
+                  aria-label="Follow Vouch on LinkedIn"
+                  className="text-primary"
+                >
+                  <FaLinkedin size={24} />
+                </a>
+              </div>
+            </div>
+
+            <div className="flex justify-between w-full md:w-[40%]">
+              <div>
+                <h4 className="font-semibold text-foreground mb-4">Products</h4>
+                <ul className="space-y-3">
+                  <li>
+                    <a
+                      href="#"
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      How it works
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      Features
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      API
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-foreground mb-4">Company</h4>
+                <ul className="space-y-3">
+                  <li>
+                    <a
+                      href="#"
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      About Us
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      Blog
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      Careers
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      Contact
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-foreground mb-4">Support</h4>
+                <ul className="space-y-3">
+                  <li>
+                    <a
+                      href="#"
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      Help Center
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      Terms of Service
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      Privacy Policy
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-2 flex flex-col md:flex-row items-center justify-between mt-6 md:mt-0 gap-4">
+            <span className="text-[12px] text-[#565656] flex items-center gap-2">
+              <FaRegCopyright /> <p>{new Date().getFullYear()} Vouch Africa. All rights reserved.</p>
+            </span>
+          </div>
         </div>
-
-        {/* Section 2 - Stats grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-white border p-5 rounded-lg">
-            <p className="text-sm font-medium text-muted-foreground mb-1">Total Orders</p>
-            <p className="text-3xl font-bold">24</p>
-            <p className="text-xs text-muted-foreground mt-1">This month</p>
-          </div>
-          <div className="bg-white border p-5 rounded-lg">
-            <p className="text-sm font-medium text-muted-foreground mb-1">Pending Payment</p>
-            <p className="text-3xl font-bold">{pendingOrders}</p>
-            <p className="text-xs text-muted-foreground mt-1">₦1,250,000</p>
-          </div>
-          <div className="bg-white border p-5 rounded-lg">
-            <p className="text-sm font-medium text-muted-foreground mb-1">Ready to Ship</p>
-            <p className="text-3xl font-bold">{readyOrders}</p>
-            <p className="text-xs text-muted-foreground mt-1">₦800,000</p>
-          </div>
-          <div className="bg-white border p-5 rounded-lg">
-            <p className="text-sm font-medium text-muted-foreground mb-1">Settled Orders</p>
-            <p className="text-3xl font-bold">{settledOrders}</p>
-            <p className="text-xs text-green-600 font-medium mt-1">Completed</p>
-          </div>
-        </div>
-
-        {/* Section 3 - Recent Orders */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-foreground">Recent Orders</h2>
-            <Link href="/orders" className="text-sm font-medium text-primary hover:underline">View All</Link>
-          </div>
-          <div className="bg-white border rounded-lg overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-slate-50/50">
-                  <TableHead>Order ID</TableHead>
-                  <TableHead>Buyer Phone</TableHead>
-                  <TableHead>Item Description</TableHead>
-                  <TableHead>Amount (₦)</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Date Created</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {recentOrders.map((order) => (
-                  <TableRow key={order.id} className="cursor-pointer hover:bg-slate-50" onClick={() => handleOrderClick(order)}>
-                    <TableCell className="font-mono text-primary font-medium">{order.id}</TableCell>
-                    <TableCell className="font-mono text-sm">{order.buyer}</TableCell>
-                    <TableCell className="max-w-50 truncate">{order.item}</TableCell>
-                    <TableCell className="font-medium">{order.amount.toLocaleString()}</TableCell>
-                    <TableCell>{getStatusBadge(order.status)}</TableCell>
-                    <TableCell className="text-muted-foreground text-sm">{order.dateCreated}</TableCell>
-                    <TableCell className="text-right">
-                      {order.status === 'DISPATCHED' ? (
-                        <span 
-                          className="text-sm font-medium text-primary hover:underline"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setRiderOrderId(order.id);
-                            setRiderModalOpen(true);
-                          }}
-                        >
-                          Track
-                        </span>
-                      ) : (
-                        <span className="text-sm font-medium text-primary hover:underline">View</span>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </div>
-
-        {/* Section 4 - Recent Activity */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-bold text-foreground">Recent Activity</h2>
-          <div className="bg-white border rounded-lg overflow-hidden">
-            {recentActivity.map((activity, i) => {
-              const [desc, time] = activity.split(' / ');
-              return (
-                <div key={i} className="p-4 border-b last:border-0 hover:bg-slate-50 transition-colors">
-                  <p className="text-sm text-foreground">{desc}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{time}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-      </div>
-
-      <CreateOrderModal open={createModalOpen} onOpenChange={setCreateModalOpen} />
-      <OrderDetailModal order={selectedOrder} open={orderModalOpen} onOpenChange={setOrderModalOpen} />
-      <RiderLinkModal open={riderModalOpen} onOpenChange={setRiderModalOpen} orderId={riderOrderId} />
-    </AppShell>
+      </footer>
+    </div>
   );
 }
