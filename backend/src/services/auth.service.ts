@@ -100,7 +100,6 @@ export const generateOtp = async (email: string) => {
     const otp = await generateUniqueOtp(6);
     const name = existingVendor[0]!.business_name
     
-      console.log("reset-email;", email)
     await emailQueue.add('password-reset', {
       name,
       email,

@@ -31,7 +31,6 @@ export const GenerateOtpController  =async (req:any, res:any) => {
     try{
         const {email} = req.body
         const otp = await generateOtp(email)
-        console.log("reset-email;", email)
         if(!otp.success){
             return res.status(otp.status).json(otp)
         }
