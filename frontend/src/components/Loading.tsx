@@ -45,7 +45,7 @@ export default function Loading() {
 
         <div className="flex flex-col items-center justify-center gap-1 z-20">
           <Image
-            src={"/logos/vouch.png"}
+            src={"/images/vouch.png"}
             alt="Vouch"
             width={48}
             height={48}
