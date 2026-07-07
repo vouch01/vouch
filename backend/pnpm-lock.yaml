@@ -21,7 +21,7 @@ importers:
         specifier: ^17.4.2
         version: 17.4.2
       drizzle-orm:
-        specifier: ^0.36.4
+        specifier: ^0.36.0
         version: 0.36.4(@neondatabase/serverless@0.10.4)(@types/pg@8.20.0)(pg@8.22.0)
       express:
         specifier: ^5.2.1
@@ -70,7 +70,7 @@ importers:
         specifier: ^6.0.0
         version: 6.0.0
       drizzle-kit:
-        specifier: ^0.28.1
+        specifier: ^0.28.0
         version: 0.28.1
       express-rate-limit:
         specifier: ^8.5.2
