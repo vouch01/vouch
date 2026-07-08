@@ -13,6 +13,7 @@ interface OrderInputs {
   amount: number;
   additional_notes: string;
   delivery_address: string;
+  item_name:string
 }
 
 type orderStatus =
@@ -30,6 +31,7 @@ export const createOrder = async (orderData: OrderInputs, vendor_id:string) => {
     const {
       buyer_phone,
       item_description,
+      item_name,
       amount,
       additional_notes,
       delivery_address,
@@ -64,6 +66,7 @@ export const createOrder = async (orderData: OrderInputs, vendor_id:string) => {
         buyer_phone,
         idempotency_key: key,
         item_description,
+        item_name,
         additional_notes,
         delivery_address,
         virtual_account_ref,
