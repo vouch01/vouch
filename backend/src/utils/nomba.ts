@@ -21,7 +21,6 @@ async function issueNewToken(): Promise<void> {
     throw new Error('Nomba authentication failed')
   }
 
-    console.log('Nomba Atoken response:', data)
 
   const { access_token, refresh_token, expiresAt } = data
   cachedToken = access_token
@@ -46,7 +45,6 @@ async function refreshToken():Promise<void>{
     throw new Error('Nomba authentication failed')
   }
 
-    console.log('Nomba Rtoken response:', data)
     const {access_token, refresh_token, expiresAt} = data
     
     cachedToken= access_token
@@ -89,4 +87,9 @@ export const nairaToKobo= (nairaAmount: number| string): number => {
 
 export const koboToNombaFormat:any = (koboAmount:number):string => {
     return (koboAmount/100) .toFixed(2)
+}
+
+export const formatNombaDate = (date:Date) :string =>{
+const pad = (n: number) => String(n).padStart(2, '0')
+  return `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())} ${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())}:${pad(date.getUTCSeconds())}`
 }
