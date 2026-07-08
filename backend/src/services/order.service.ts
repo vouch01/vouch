@@ -3,7 +3,8 @@ import { db } from "../db/index.js";
 import { vendors, orders, webhook_events, otp_tokens } from "../db/schema.js";
 import { generateUniqueToken } from "../utils/uuid.js";
 import crypto from "crypto";
-import { date } from "drizzle-orm/mysql-core";
+import { nairaToKobo } from "../utils/nomba.js";
+
 
 interface OrderInputs {
   vendor_id: string;
@@ -53,8 +54,9 @@ export const createOrder = async (orderData: OrderInputs, vendor_id:string) => {
     }
     const checkoutToken = generateUniqueToken(12);
     const virtual_account_ref = generateUniqueToken(24);
-    const expires_at = new Date(Date.now() + 30 * 60 * 1000);
+    const expires_at = new Date(Date.now() + 60 * 60 * 1000);
 
+    const safeKoboAmount = nairaToKobo(amount)
     const order = await db
       .insert(orders)
       .values({
@@ -66,7 +68,7 @@ export const createOrder = async (orderData: OrderInputs, vendor_id:string) => {
         delivery_address,
         virtual_account_ref,
         checkout_token: checkoutToken,
-        expected_amount: amount,
+        expected_amount: safeKoboAmount,
         expires_at,
       })
       .returning();

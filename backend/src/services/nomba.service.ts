@@ -56,16 +56,16 @@ export const Payment = {
     */
   async createVirtualAccountForSubAccount(
     virtual_account_ref: string,
-    expected_amount: number,
-    expires_at: Date,
+    formattedAmount: number,
+    nombaTimeFormat: string,
   ):Promise<{}> {
     const token = await getValidAccessToken()
     const response = await axios.post('https://api.nomba.com/v1/accounts/virtual',{
-        virtual_account_ref,
+        accountRef: virtual_account_ref,
         accountName: 'Vouch Escrow',
          currency: 'NGN',
-         expectedAmount: expected_amount,
-         expiryDate: expires_at
+         expectedAmount: formattedAmount,
+         expiryDate: nombaTimeFormat
     },{
         headers:{
             Authorization: `Bearer ${token}`,
