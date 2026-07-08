@@ -22,9 +22,10 @@ export const collectOrderPayment = async ( checkout_token:string ) => {
             return{status:404, success:false, message: "Order not found"}
         }
         
-        const businessName = await db.query.vendors.findFirst({
+        const vendor = await db.query.vendors.findFirst({
             where: eq(vendors.id, order.vendor_id)
         })
+        const businessName=  vendor?.business_name
 
         const virtual_account_ref= generateUniqueToken(22)
         const {expected_amount, expires_at, buyer_phone, item_name, item_description} = order
