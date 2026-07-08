@@ -1,4 +1,3 @@
-import { rmdirSync } from "node:fs"
 import {createOrder, getAllOrders, getOrderById, deleteOrderById, } from "../services/order.service.js"
 
 export const CreateOrderController = async(req:any, res:any) =>{
