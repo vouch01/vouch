@@ -3,7 +3,7 @@ import {
   pgEnum,
 } from "drizzle-orm/pg-core";
 import * as t from "drizzle-orm/pg-core";
-import { timestamps } from "./columns.helpers.js";
+import { timestamps } from "./columns.helpers";
 
 // export const rolesEnum = pgEnum("roles", ["VENDOR", "BUYER", "RIDER"]);
 export const otpTokenStatusEnum =pgEnum("otp_token_status", [
@@ -38,6 +38,7 @@ export const orders = pgTable("orders", {
   vendor_id: t.uuid("vendor_id").references(() => vendors.id).notNull(),
   buyer_phone: t.text("buyer_phone"),
   buyer_email: t.text("buyer_email").unique(),
+  item_name:t.text("item_name").notNull(),
   item_description: t.text("item_description").notNull(),
   additional_notes:t.text("additional_notes"),
   delivery_address:t.text("delivery_address"),
