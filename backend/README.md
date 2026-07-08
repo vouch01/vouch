@@ -12,6 +12,7 @@
 ## ARCHITECTURE
 [System Architecture](https://excalidraw.com/#json=IqFvj6s_tGLgDCM-5Qh7Y,FhpIboelPpE5CCJI9N3wkQ)
 
+![Vouch's diagram image](https://ik.imagekit.io/4wxtrbyyf/olo-designs/Vouch's-system-arch-diagram.png)
 
 ## TECH STACK 
 - Typesccript
