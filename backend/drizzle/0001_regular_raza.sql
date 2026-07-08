@@ -1,0 +1,1 @@
+ALTER TABLE "orders" ALTER COLUMN "expires_at" SET DATA TYPE timestamp with time zone;

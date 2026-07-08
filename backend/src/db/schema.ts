@@ -48,7 +48,7 @@ export const orders = pgTable("orders", {
   virtual_account_ref: t.text("virtual_account_ref").notNull().unique(),
   virtual_account_holder_id: t.text("virtual_account_holder_id"),
   payout_amount: t.integer("payout_amount"),
-  expires_at: t.timestamp("expires_at").notNull(),
+  expires_at: t.timestamp("expires_at", { withTimezone: true }).notNull(),
   delivery_pin_hash: t.text("delivery_pin_hash"),
   rider_token: t.text("rider_token").unique(),
   checkout_token: t.text("checkout_token").unique().notNull(),
