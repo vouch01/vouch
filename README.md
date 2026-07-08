@@ -96,7 +96,7 @@ Click through below to read the comprehensive technical breakdowns for each laye
 ---
 
 - [Frontend](./frontend) - Contains our persona-driven responsive views (Vendor Kanban Tracker, Buyer Countdown Portal, and Rider Keypad Input).
-- [Backend](./backend) -Contains our Drizzle schema migrations, automated Nomba service wrappers, webhook endpoints, and transactional ledger controllers.
+- [Backend doc](./backend) -Contains our Drizzle schema migrations, automated Nomba service wrappers, webhook endpoints, and transactional ledger controllers.
 
 Please visit [Backend](./backend/README.md), for vouch's system infrastructure overview.
 
