@@ -27,13 +27,16 @@ export const collectOrderPayment = async ( checkout_token:string ) => {
 
     const formattedAmount = koboToNombaFormat(expected_amount)
 
-        const virtual_account = await Payment.createVirtualAccountForSubAccount(virtual_account_ref, formattedAmount, nombaTimeFormat)
-        console.log("virtual_account;", virtual_account)
+        const {bankAccountName, bankAccountNumber, expiryDate} = await Payment.createVirtualAccountForSubAccount(virtual_account_ref, formattedAmount, nombaTimeFormat)
+        
+        const details ={bankAccountName, bankAccountNumber, expiryDate}
+
+        // console.log("virtual_account_details;",details )
         return{
             status:200,
             success:true,
             message:"Virtual account sent successfully",
-            data:virtual_account
+            data:details
         }
     }catch (err: any){
       console.error("Nomba error", err.message);
