@@ -41,45 +41,50 @@ Vouch is structured as a high-performance monorepo utilizing a state-driven ledg
 
 --
 
-## Repository Structure
+```text
 /vouch
-├── /frontend
-│   ├── /src
-│   │   ├── /components        # UI Components (AuthForm, Navbar, etc.)
-│   │   ├── /pages             # App pages (Home, Dashboard, Pricing)
-│   │   ├── /hooks             # Custom React hooks (useAuth, useLogoGenerator)
-│   │   ├── /lib               # Config files (Supabase, API client, constants)
-│   │   ├── /styles            # Global and component styles
-│   │   ├── App.tsx            # Main routing setup
-│   │   └── main.tsx           # React entry point
-│   ├── public/                # Public assets (icons, logos)
-│   ├── tailwind.config.ts     # Configures Tailwind CSS settings
-│   ├── vite.config.ts         # Contains build and development settings for the Vite bundler
-│   └── package.json           # Lists frontend project dependencies, scripts, and metadata
+├── frontend
+│   ├── src
+│   │   ├── components        # UI Components (AuthForm, Navbar, etc.)
+│   │   ├── pages             # App pages (Home, Dashboard, Pricing)
+│   │   ├── hooks             # Custom React hooks (useAuth, useLogoGenerator)
+│   │   ├── lib               # Config files (Supabase, API client, constants)
+│   │   ├── styles            # Global and component styles
+│   │   ├── App.tsx           # Main routing setup
+│   │   └── main.tsx          # React entry point
+│   ├── public                # Public assets (icons, logos)
+│   ├── tailwind.config.ts    # Configures Tailwind CSS settings
+│   ├── vite.config.ts        # Vite bundler settings
+│   └── package.json          # Frontend dependencies, scripts, metadata
 │
-├── backend/                  # TypeScript + Express + Drizzle
-│   ├── src/
-│   │   ├── db/
-│   │   │   ├── schema.ts     # Your Drizzle schema definitions (Orders, History)
-│   │   │   └── index.ts      # Database connection instance (Neon/Supabase client)
-│   │   ├── services/
-│   │   │   └── nomba.ts      # Third-party API wrapper (Virtual AC, Transfers, Requery)
-│   │   ├── controllers/
-│   │   │   ├── auth.controller.ts      # Logic for creating link, canceling dispute
-│   │   │   ├── order.controller.ts      # Logic for creating link, canceling dispute
-│   │   │   ├── payment.controller.ts      # Logic for creating link, canceling dispute
-│   │   │   ├── profile.controller.ts      # Logic for creating link, canceling dispute
-│   │   ├── routes/
-│   │   │   └── auth.routes.ts        # Express routing definitions mapping to controllers
-│   │   │   └── index.routes.ts        # Express routing definitions mapping to controllers
-│   │   │   └── order.routes.ts        # Express routing definitions mapping to controllers
-│   │   │   └── payment.routes.ts        # Express routing definitions mapping to controllers
-│   │   └── index.ts          # Server entry point, express app configuration, node-cron
-│   ├── drizzle.config.ts     # Drizzle CLI configuration for migrations
+├── backend                   # TypeScript + Express + Drizzle
+│   ├── src
+│   │   ├── db
+│   │   │   ├── schema.ts     # Drizzle schema definitions (Orders, History)
+│   │   │   └── index.ts      # Database connection (Neon/Supabase client)
+│   │   ├── services
+│   │   │   └── nomba.ts      # Third-party API wrapper
+│   │   ├── controllers
+│   │   │   ├── auth.controller.ts
+│   │   │   ├── order.controller.ts
+│   │   │   ├── payment.controller.ts
+│   │   │   └── profile.controller.ts
+│   │   ├── routes
+│   │   │   ├── auth.routes.ts
+│   │   │   ├── index.routes.ts
+│   │   │   ├── order.routes.ts
+│   │   │   └── payment.routes.ts
+│   │   └── index.ts          # Server entry point, express app config, node-cron
+│   ├── drizzle.config.ts     # Drizzle CLI configuration
 │   ├── package.json
 │   └── tsconfig.json
 │
-└── README.md                 
+└── README.md
+```
+
+
+
+                
 
 ## Repository Directory Roadmap
 >This repository is split into isolated frontend and backend structures to maintain clean dependency separation.
