@@ -8,6 +8,18 @@
 import { getValidAccessToken } from "../utils/nomba.js";
 import axios from 'axios'
 
+export interface createSubAccountResult {
+    bankName:string,
+    accountRef:string,
+    accountHolderId: string, 
+    bankAccountNumber:string,
+    expiryDate: string , 
+    createdAt: string, 
+    bankAccountName:string, 
+    code: string,
+     description:string
+}
+
 interface SubAccountTransferInput{
     amount:number,
     accountNumber:string,
@@ -58,7 +70,7 @@ export const Payment = {
     virtual_account_ref: string,
     formattedAmount: number,
     nombaTimeFormat: string,
-  ):Promise<{}> {
+  ):Promise<createSubAccountResult> {
     const token = await getValidAccessToken()
     const response = await axios.post('https://api.nomba.com/v1/accounts/virtual',{
         accountRef: virtual_account_ref,
@@ -77,9 +89,9 @@ export const Payment = {
 
     const { code, data , description} = response.data
 
-    const {bankName, createdAt, bankAccountName} = data
+    const {bankName, createdAt, bankAccountName, bankAccountNumber, accountRef, accountHolderId, expiryDate } = data
 
-    return{ bankName, data, createdAt, bankAccountName, code, description}
+    return{ bankName,accountRef , accountHolderId, expiryDate , createdAt, bankAccountName,bankAccountNumber, code, description}
   },
 
   /*
