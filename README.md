@@ -39,12 +39,61 @@ Vouch is structured as a high-performance monorepo utilizing a state-driven ledg
 - Database ORM: Drizzle ORM paired with PostgreSQL for schema-enforced, type-safe state transitions
 - Frontend Framework: Nextjs + Tailwind CSS optimized for lightweight mobile-web responsiveness.
 
+--
+
+## Repository Structure
+/vouch
+├── /frontend
+│   ├── /src
+│   │   ├── /components        # UI Components (AuthForm, Navbar, etc.)
+│   │   ├── /pages             # App pages (Home, Dashboard, Pricing)
+│   │   ├── /hooks             # Custom React hooks (useAuth, useLogoGenerator)
+│   │   ├── /lib               # Config files (Supabase, API client, constants)
+│   │   ├── /styles            # Global and component styles
+│   │   ├── App.tsx            # Main routing setup
+│   │   └── main.tsx           # React entry point
+│   ├── public/                # Public assets (icons, logos)
+│   ├── tailwind.config.ts     # Configures Tailwind CSS settings
+│   ├── vite.config.ts         # Contains build and development settings for the Vite bundler
+│   └── package.json           # Lists frontend project dependencies, scripts, and metadata
+│
+├── backend/                  # TypeScript + Express + Drizzle
+│   ├── src/
+│   │   ├── db/
+│   │   │   ├── schema.ts     # Your Drizzle schema definitions (Orders, History)
+│   │   │   └── index.ts      # Database connection instance (Neon/Supabase client)
+│   │   ├── services/
+│   │   │   └── nomba.ts      # Third-party API wrapper (Virtual AC, Transfers, Requery)
+│   │   ├── controllers/
+│   │   │   ├── auth.controller.ts      # Logic for creating link, canceling dispute
+│   │   │   ├── order.controller.ts      # Logic for creating link, canceling dispute
+│   │   │   ├── payment.controller.ts      # Logic for creating link, canceling dispute
+│   │   │   ├── profile.controller.ts      # Logic for creating link, canceling dispute
+│   │   ├── routes/
+│   │   │   └── auth.routes.ts        # Express routing definitions mapping to controllers
+│   │   │   └── index.routes.ts        # Express routing definitions mapping to controllers
+│   │   │   └── order.routes.ts        # Express routing definitions mapping to controllers
+│   │   │   └── payment.routes.ts        # Express routing definitions mapping to controllers
+│   │   └── index.ts          # Server entry point, express app configuration, node-cron
+│   ├── drizzle.config.ts     # Drizzle CLI configuration for migrations
+│   ├── package.json
+│   └── tsconfig.json
+│
+└── README.md                 
+
 ## Repository Directory Roadmap
->This repository is split into isolated frontend and backend structures to maintain clean dependency separation. Click through below to read the comprehensive technical breakdowns for each layer:
+>This repository is split into isolated frontend and backend structures to maintain clean dependency separation.
 
 ---
+
+Click through below to read the comprehensive technical breakdowns for each layer:
+
+---
+
 - [Frontend](./frontend) - Contains our persona-driven responsive views (Vendor Kanban Tracker, Buyer Countdown Portal, and Rider Keypad Input).
 - [Backend](./backend) -Contains our Drizzle schema migrations, automated Nomba service wrappers, webhook endpoints, and transactional ledger controllers.
+
+Please visit [Backend](./backend/README.md), for vouch's system infrastructure overview.
 
 ## Quick Start (Local Sandbox Environment)
 Prerequisites
