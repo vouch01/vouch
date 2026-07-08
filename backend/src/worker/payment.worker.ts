@@ -1,17 +1,16 @@
-console.log('Email worker file loaded')
+console.log('Payment  worker file loaded')
 
 import {Worker } from 'bullmq'
 import { connection}  from  "../lib/redis.js" 
-import {Payment} from "../services/nomba.service.js"
+import {processOrderPayment} from "../services/payment.service.js"
 
 const paymentWorker  = new Worker ('email', async (job) => {
-    const {accountNumber,bankCode, virtual_account_ref, currency, expectedAmount,expiryDate } =job.data
 
     switch(job.name){
         case 'verification':
-        case 'lookup-account':
-            await Payment.lookupBankAccount(accountNumber,bankCode )
-            console.log('sendPasswordResetOtp job processed')
+        case 'process-payment':
+            await processOrderPayment(job.data)
+            console.log('process payment job processed')
             break;
             default:
                 throw new Error (`Unknown job type: ${job.name}`)
