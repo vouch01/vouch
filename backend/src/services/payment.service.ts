@@ -21,22 +21,27 @@ export const collectOrderPayment = async ( checkout_token:string ) => {
         if(!order){
             return{status:404, success:false, message: "Order not found"}
         }
+        
+        const businessName = await db.query.vendors.findFirst({
+            where: eq(vendors.id, order.vendor_id)
+        })
+
         const virtual_account_ref= generateUniqueToken(22)
-        const {expected_amount, expires_at} = order
+        const {expected_amount, expires_at, buyer_phone, item_name, item_description} = order
         const nombaTimeFormat = formatNombaDate(expires_at)
 
     const formattedAmount = koboToNombaFormat(expected_amount)
 
         const {bankAccountName, bankAccountNumber, expiryDate} = await Payment.createVirtualAccountForSubAccount(virtual_account_ref, formattedAmount, nombaTimeFormat)
         
-        const details ={bankAccountName, bankAccountNumber, expiryDate}
-
+        const paymentDetails ={bankAccountName, bankAccountNumber, expiryDate}
+        const orderDetails = {buyer_phone, item_name, item_description, businessName}
         // console.log("virtual_account_details;",details )
         return{
             status:200,
             success:true,
             message:"Virtual account sent successfully",
-            data:details
+            data:{paymentDetails, orderDetails}
         }
     }catch (err: any){
       console.error("Nomba error", err.message);
