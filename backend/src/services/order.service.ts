@@ -4,7 +4,7 @@ import { vendors, orders, webhook_events, otp_tokens } from "../db/schema.js";
 import { generateUniqueToken } from "../utils/uuid.js";
 import crypto from "crypto";
 import { nairaToKobo } from "../utils/nomba.js";
-
+import {connection} from '../lib/redis.js'
 
 interface OrderInputs {
   vendor_id: string;
@@ -150,6 +150,40 @@ export const deleteOrderById = async(vendor_id:string, id:string) =>{
       }
     }catch (err: any) {
     console.error("Error occurred while deleting order:", err.message);
+    return { status: 500, success: false, message: err.message };
+  }
+}
+
+export const getOrderAuthPin  =  async(checkoutToken:string) =>{
+    try{
+        const order = await db.query.orders.findFirst({
+            where: eq(orders.checkout_token, checkoutToken)
+        })
+        if(!order){
+                  return { status: 404, success: false, message: 'Order not found' }
+        }
+
+    let pin: string | null = null
+    if (order.status === 'PAID_IN_ESCROW') {
+      pin = await connection.get(`pin:${checkoutToken}`)
+      if (pin) 
+        await connection.del(`pin:${checkoutToken}`)  
+    }
+
+    return{
+        status: 200,
+      success: true,
+      data: {
+        orderStatus: order.status,
+        expectedAmount: order.expected_amount,
+        amountPaid: order.amount_paid,
+        virtualAccountNumber: order.virtual_account_number,
+        expiresAt: order.expires_at,
+        pin
+    }
+    }
+}catch (err: any) {
+    console.error("Error occurred while fetching order auth pin:", err.message);
     return { status: 500, success: false, message: err.message };
   }
 }
