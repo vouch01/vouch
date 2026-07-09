@@ -76,7 +76,7 @@ try{
 }
 
 
-export const nairaToKobo= (nairaAmount: number| string): number => {
+export const nairaToKobo= (nairaAmount:number) => {
     const parsed = typeof nairaAmount === 'string' ? parseFloat(nairaAmount) : nairaAmount;
 
     if (isNaN(parsed) || parsed< 0) {
