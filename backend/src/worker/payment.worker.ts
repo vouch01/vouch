@@ -10,7 +10,7 @@ const paymentWorker  = new Worker ('email', async (job) => {
         case 'verification':
         case 'process-payment':
             await processOrderPayment(job.data)
-            console.log('process payment job processed')
+            console.log('process-payment job processed')
             break;
             default:
                 throw new Error (`Unknown job type: ${job.name}`)
