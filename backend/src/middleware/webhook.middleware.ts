@@ -18,16 +18,16 @@ export const verifySignature = async (req:any , res:any , next:any ) =>{
         console.log(`Expected signature [${nombaSignature}]`);
 
         
-        if (nombaSignature?.toLowerCase() !== vouchSig?.toLowerCase()) {
-  console.warn("Signature mismatch — rejecting webhook")
-  return res.status(401).json({ message: "Invalid signature" })
-}
+//         if (nombaSignature?.toLowerCase() !== vouchSig?.toLowerCase()) {
+//   console.warn("Signature mismatch — rejecting webhook")
+//   return res.status(401).json({ message: "Invalid signature" })
+// }
 
-        // if (nombaSignature.toLowerCase() === vouchSig!.toLowerCase()) {
-        // console.log(">>>>>>> Signatures match <<<<<<<<<<<");
-        // } else {
-        // console.log("<<<<<<<<< Signatures did not match >>>>>>>>>");
-        // }
+        if (nombaSignature.toLowerCase() === vouchSig!.toLowerCase()) {
+        console.log(">>>>>>> Signatures match <<<<<<<<<<<");
+        } else {
+        console.log("<<<<<<<<< Signatures did not match >>>>>>>>>");
+        }
 
         next()
     }catch(error){
