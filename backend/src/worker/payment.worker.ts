@@ -4,7 +4,7 @@ import {Worker } from 'bullmq'
 import { connection}  from  "../lib/redis.js" 
 import {processOrderPayment} from "../services/payment.service.js"
 
-const paymentWorker  = new Worker ('email', async (job) => {
+const paymentWorker  = new Worker ('payment', async (job) => {
 
     switch(job.name){
         case 'verification':
