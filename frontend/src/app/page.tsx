@@ -177,13 +177,15 @@ export default function Home() {
                 </p>
               </div>
               <div className="shrink-0 flex flex-col w-full md:w-auto gap-6">
-                <Button
+              <Link href={"/signup"}>
+               <Button
                   size="lg"
                   className="w-full md:w-auto h-14 px-8 text-base bg-primary hover:bg-primary/90 text-white rounded-xl shadow-lg shadow-primary/25 group"
                 >
                   Create Escrow Order
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
+              </Link>
                 <p className="text-sm text-[#565656] font-medium">
                   No monthly fees, pay only when you transact.
                 </p>
