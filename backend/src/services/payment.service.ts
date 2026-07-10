@@ -72,6 +72,8 @@ export const collectOrderPayment = async (checkout_token: string) => {
 export const processOrderPayment = async (payload: any) => {
   try {
     const {event_type, data} =payload
+    console.log("Webhook-data-from-processOrderService", payload)
+
     const { transaction} = data
     const { transactionAmount, transactionId } = transaction;
     const acctReference = transaction?.aliasAccountReference;
@@ -89,6 +91,7 @@ export const processOrderPayment = async (payload: any) => {
     ]);
 
         if(!order){
+            console.log("Order not found")
             return{status:404, success:false, message:" Order not found"}
         }
 
@@ -104,6 +107,8 @@ export const processOrderPayment = async (payload: any) => {
         })
 
         const amount = koboToNombaFormat(order.expected_amount)
+        console.log("order-amount", amount)
+        
         if(transactionAmount === amount){
             const pin =await generateUniqueOtp(4)
             const pinHash = await bcrypt.hash(pin, 10)
