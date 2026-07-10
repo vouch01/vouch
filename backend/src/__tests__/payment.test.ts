@@ -26,6 +26,7 @@ describe("Payment flow", () => {
         item_description:"ows gadgets",
         additional_notes: "Keep it neat",
         delivery_address: "new wplace way ",
+        item_name: "Talking bag",
          amount: 30000,
      })   
      id =res.body.data.id
