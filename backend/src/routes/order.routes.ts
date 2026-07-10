@@ -5,8 +5,8 @@ import {CreateOrderController, GetAllOrderController, GetOrderByIdController, De
 import {authenticate} from "../middleware/auth.middleware.js"
 
 router.post('/create', authenticate, CreateOrderController)
-router.get('/:id', authenticate, GetOrderByIdController)
 router.get('/all', authenticate, GetAllOrderController)
+router.get('/:id', authenticate, GetOrderByIdController)
 router.delete('/cancel/:id', authenticate,DeleteOrderById )
 router.get('/status/:checkoutToken',GetOrderAuthPinController)
 

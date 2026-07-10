@@ -92,12 +92,11 @@ export const createOrder = async (orderData: OrderInputs, vendor_id:string) => {
 
 
 
-export const getAllOrders = async () =>{
+export const getAllOrders = async (vendor_id:string) =>{
     try{
-    const orderList = await db.select().from(orders)
-    const existingOrders =orderList.filter(order => {
-        return order.deleted_at === null
-    } )
+    const existingOrders = await db.query.orders.findMany({
+        where: and(eq(orders.vendor_id, vendor_id), isNull(orders.deleted_at))
+    })
     return{
         status:200,
         success:true,
@@ -105,7 +104,7 @@ export const getAllOrders = async () =>{
         message: "Orders retrieved successfully"
     }
 }catch (err: any) {
-    console.error("Error occurred while creating order:", err.message);
+    console.error("Error occurred while retrieving order:", err.message);
     return { status: 500, success: false, message: err.message };
   }
 }
@@ -126,7 +125,7 @@ export const getOrderById = async (vendor_id:string,id:string) =>{
         message: "Order retrieved successfully"
     }
 }catch (err: any) {
-    console.error("Error occurred while creating order:", err.message);
+    console.error("Error occurred while retrieving order by id:", err.message);
     return { status: 500, success: false, message: err.message };
   }
 }

@@ -16,7 +16,8 @@ export const CreateOrderController = async(req:any, res:any) =>{
 
 export const GetAllOrderController = async(req:any, res:any) =>{
     try{
-        const order = await getAllOrders()
+        const vendor_id = req.user.id
+        const order = await getAllOrders(vendor_id)
         if(!order.success){
             return res.status(order.status).json(order)
         }
