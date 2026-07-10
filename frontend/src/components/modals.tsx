@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react-hooks/incompatible-library */
 "use client";
 
@@ -29,8 +29,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { useCreateOrder } from "@/hooks/use-order";
-import { useOrders } from "@/hooks/use-orders";
-import { Order, CreatedOrder } from "@/types/order";
+import { useOrder } from "@/hooks/use-orders";
+import { CreatedOrder } from "@/types/order";
+import Loading from "./Loading";
 
 export function CreateOrderModal({
   open,
@@ -117,17 +118,15 @@ export function CreateOrderModal({
       onOpenChange={(o) => {
         if (!o) resetAndClose();
       }}
-      
     >
-      
       <DialogContent className="sm:max-w-[50vw] p-0">
         <DialogHeader className="border-b p-6">
-        <DialogTitle>
-          {step === 1 && "Create Order"}
-          {step === 2 && "Review Order"}
-          {step === 3 && "Share Payment Link"}
-        </DialogTitle>
-      </DialogHeader>
+          <DialogTitle>
+            {step === 1 && "Create Order"}
+            {step === 2 && "Review Order"}
+            {step === 3 && "Share Payment Link"}
+          </DialogTitle>
+        </DialogHeader>
         {step < 3 && (
           <div className="mb-4 px-6">
             <div className="flex gap-2 mb-2">
@@ -281,7 +280,9 @@ export function CreateOrderModal({
         {step === 2 && (
           <div className="space-y-4 py-4 px-6">
             <div className="bg-[#F5F5F7] border rounded-md p-4 space-y-3">
-              <h2 className="font-normal text-[#1F1F1F] text-[14px]">Order Summary</h2>
+              <h2 className="font-normal text-[#1F1F1F] text-[14px]">
+                Order Summary
+              </h2>
               <div className="flex justify-between pb-2">
                 <span className="text-[12px] text-muted-foreground">Item</span>
                 <span className="text-[12px] font-medium">
@@ -289,7 +290,9 @@ export function CreateOrderModal({
                 </span>
               </div>
               <div className="flex justify-between pb-2">
-                <span className="text-[12px] text-muted-foreground">Amount</span>
+                <span className="text-[12px] text-muted-foreground">
+                  Amount
+                </span>
                 <span className="text-[12px] font-medium">
                   ₦{Number(values.amount).toLocaleString("en-NG")}
                 </span>
@@ -371,10 +374,10 @@ export function CreateOrderModal({
               </div>
             </div>
 
-            <div className="flex gap-3 pt-2">
+            <div className="flex gap-3 py-10 px-6 border-t border-[#DDDDDE}">
               <Button
                 variant="outline"
-                className="flex-1 gap-2 border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10"
+                className="flex-1 gap-2 text-[#25D366] hover:bg-[#25D366]/10 cursor-pointer"
                 onClick={() =>
                   window.open(
                     `https://wa.me/?text=Pay for ${createdOrder.item_description} here: https://vouch.link/pay/${createdOrder.id}`,
@@ -385,7 +388,7 @@ export function CreateOrderModal({
               </Button>
               <Button
                 variant="outline"
-                className="flex-1 gap-2 border-pink-500 text-pink-600 hover:bg-pink-50"
+                className="flex-1 gap-2 text-pink-600 hover:bg-pink-50 cursor-pointer"
               >
                 <SiInstagram className="w-4 h-4" /> Instagram DM
               </Button>
@@ -397,180 +400,283 @@ export function CreateOrderModal({
   );
 }
 
-// export function OrderDetailModal({ order, open, onOpenChange }: { order: Order | null, open: boolean, onOpenChange: (o: boolean) => void }) {
-//   const { updateOrderStatus } = useOrders();
-//   const { toast } = useToast();
+export function OrderDetailModal({
+  orderId,
+  open,
+  onOpenChange,
+}: {
+  orderId?: string;
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+}) {
+  const { data, isLoading } = useOrder(orderId ?? "");
 
-//   if (!order) return null;
+  const order = data?.data;
 
-//   const copyLink = (link: string) => {
-//     navigator.clipboard.writeText(link);
-//     toast({ title: "Copied to clipboard" });
-//   };
+  if (!order) return null;
 
-//   const getStatusBadge = (status: string) => {
-//     switch(status) {
-//       case 'PENDING': return <Badge variant="secondary">Pending Payment</Badge>;
-//       case 'PAID_IN_ESCROW': return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 border border-amber-200">Ready to Ship</Badge>;
-//       case 'DISPATCHED': return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 border border-blue-200">Dispatched</Badge>;
-//       case 'SETTLED': return <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border border-green-200">Settled</Badge>;
-//       case 'DISPUTED': return <Badge className="bg-pink-100 text-pink-800 hover:bg-pink-100 border border-pink-200">Disputed</Badge>;
-//       default: return <Badge variant="outline">{status}</Badge>;
-//     }
-//   };
+  const { toast } = useToast();
 
-//   return (
-//     <Dialog open={open} onOpenChange={onOpenChange}>
-//       <DialogContent className="sm:max-w-125">
-//         <DialogHeader className="flex flex-row items-center justify-between pb-2 border-b">
-//           <DialogTitle className="flex items-center gap-3">
-//             <span>Order {order.id}</span>
-//             {getStatusBadge(order.status)}
-//           </DialogTitle>
-//         </DialogHeader>
+  const copyLink = (link: string) => {
+    navigator.clipboard.writeText(link);
+    toast({ title: "Copied to clipboard" });
+  };
 
-//         <div className="py-4 space-y-6">
-//           {order.status === 'PENDING' && (
-//             <div className="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-md text-sm flex gap-2">
-//               <AlertCircle className="w-5 h-5 shrink-0" />
-//               <p>Awaiting Payment — Send the payment link to the buyer. Payment must be received within 30 minutes.</p>
-//             </div>
-//           )}
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "PENDING_PAYMENT":
+        return <Badge variant="secondary">Pending Payment</Badge>;
 
-//           {order.status === 'PAID_IN_ESCROW' && (
-//             <div className="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-md text-sm flex gap-2">
-//               <AlertCircle className="w-5 h-5 shrink-0" />
-//               <p>Payment confirmed and held in escrow. Now package the item and arrange delivery with a courier.</p>
-//             </div>
-//           )}
+      case "PAID_IN_ESCROW":
+        return (
+          <Badge className="bg-amber-100 text-amber-800 border border-amber-200">
+            Paid in Escrow
+          </Badge>
+        );
 
-//           {order.status === 'SETTLED' && (
-//             <div className="bg-green-50 border border-green-200 text-green-800 p-3 rounded-md text-sm flex gap-2">
-//               <CheckCircle className="w-5 h-5 shrink-0 text-green-600" />
-//               <p>Payout Completed — ₦{order.amount.toLocaleString()} transferred to your GTBank account</p>
-//             </div>
-//           )}
+      case "DISPATCHED":
+        return (
+          <Badge className="bg-blue-100 text-blue-800 border border-blue-200">
+            Dispatched
+          </Badge>
+        );
 
-//           <div>
-//             <h4 className="font-semibold text-sm mb-3">Order Details</h4>
-//             <div className="border rounded-md overflow-hidden text-sm">
-//               <div className="flex justify-between p-3 border-b bg-slate-50/50">
-//                 <span className="text-muted-foreground">Item</span>
-//                 <span className="font-medium text-right">{order.item}</span>
-//               </div>
-//               <div className="flex justify-between p-3 border-b bg-white">
-//                 <span className="text-muted-foreground">Amount</span>
-//                 <span className="font-medium text-right">₦{order.amount.toLocaleString()}</span>
-//               </div>
-//               <div className="flex justify-between p-3 border-b bg-slate-50/50">
-//                 <span className="text-muted-foreground">Buyer Phone</span>
-//                 <span className="font-medium text-right">{order.buyer}</span>
-//               </div>
-//               <div className="flex justify-between p-3 border-b bg-white">
-//                 <span className="text-muted-foreground">Delivery Address</span>
-//                 <span className="font-medium text-right max-w-50 truncate" title={order.deliveryAddress}>{order.deliveryAddress}</span>
-//               </div>
-//               <div className="flex justify-between p-3 bg-slate-50/50">
-//                 <span className="text-muted-foreground">Date Created</span>
-//                 <span className="font-medium text-right">{order.dateCreated}</span>
-//               </div>
-//             </div>
-//           </div>
+      case "SETTLED":
+        return (
+          <Badge className="bg-green-100 text-green-800 border border-green-200">
+            Settled
+          </Badge>
+        );
 
-//           {order.status === 'PENDING' && (
-//             <div>
-//               <h4 className="font-semibold text-sm mb-3">Resend Payment Link</h4>
-//               <div className="flex items-center gap-2 p-3 bg-secondary border rounded-md text-left mb-3">
-//                 <Input readOnly value={`https://vouch.link/pay/${order.id}`} className="font-mono text-sm bg-transparent border-none focus-visible:ring-0 px-0 h-auto" />
-//                 <Button variant="ghost" size="sm" onClick={() => copyLink(`https://vouch.link/pay/${order.id}`)}><Copy className="w-4 h-4" /></Button>
-//               </div>
-//               <div className="flex gap-3">
-//                 <Button variant="outline" className="flex-1 gap-2 border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10">
-//                   <SiWhatsapp className="w-4 h-4" /> WhatsApp
-//                 </Button>
-//                 <Button variant="outline" className="flex-1 gap-2 border-pink-500 text-pink-600 hover:bg-pink-50">
-//                   <SiInstagram className="w-4 h-4" /> Instagram DM
-//                 </Button>
-//               </div>
-//             </div>
-//           )}
+      case "EXPIRED":
+        return <Badge variant="destructive">Expired</Badge>;
 
-//           {order.status === 'PAID_IN_ESCROW' && (
-//             <div className="space-y-3">
-//               <Button
-//                 className="w-full"
-//                 onClick={() => {
-//                   updateOrderStatus(order.id, 'DISPATCHED');
-//                   onOpenChange(false);
-//                   toast({ title: "Order marked as dispatched" });
-//                 }}
-//               >
-//                 Mark as Dispatched
-//               </Button>
-//               <Button variant="outline" className="w-full">Contact Support</Button>
-//             </div>
-//           )}
+      case "REFUNDED":
+        return (
+          <Badge className="bg-pink-100 text-pink-800 border border-pink-200">
+            Refunded
+          </Badge>
+        );
 
-//           {order.status === 'DISPUTED' && (
-//             <div>
-//               <h4 className="font-semibold text-sm mb-3">Reason</h4>
-//               <div className="mb-3">
-//                 <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">Wrong item received</Badge>
-//               </div>
-//               <div className="mb-4">
-//                 <span className="text-sm text-muted-foreground mb-1 block">Buyer Note:</span>
-//                 <div className="p-3 bg-slate-50 border rounded-md text-sm italic text-slate-600">
-//                   &quot;I ordered a black shoe but received a white one.&quot;
-//                 </div>
-//               </div>
-//               <Button className="w-full">Accept Dispute & Issue Refund</Button>
-//             </div>
-//           )}
+      default:
+        return <Badge>{status}</Badge>;
+    }
+  };
 
-//           {order.status === 'SETTLED' && (
-//             <>
-//               <div>
-//                 <h4 className="font-semibold text-sm mb-3">Payout Details</h4>
-//                 <div className="border rounded-md overflow-hidden text-sm">
-//                   <div className="flex justify-between p-3 border-b bg-white">
-//                     <span className="text-muted-foreground">Payout Amount</span>
-//                     <span className="font-medium text-right">₦{order.amount.toLocaleString()}</span>
-//                   </div>
-//                   <div className="flex justify-between p-3 border-b bg-slate-50/50">
-//                     <span className="text-muted-foreground">Payout Date</span>
-//                     <span className="font-medium text-right">{order.dateCreated}</span>
-//                   </div>
-//                   <div className="flex justify-between p-3 border-b bg-white">
-//                     <span className="text-muted-foreground">Bank Account</span>
-//                     <span className="font-medium text-right">GTBank • 0123456789</span>
-//                   </div>
-//                   <div className="flex justify-between p-3 bg-slate-50/50">
-//                     <span className="text-muted-foreground">Transaction ID</span>
-//                     <span className="font-medium text-right font-mono text-xs">TXN-2024-654321</span>
-//                   </div>
-//                 </div>
-//               </div>
-//               <div>
-//                 <h4 className="font-semibold text-sm mb-3">Delivery Confirmation</h4>
-//                 <div className="border rounded-md overflow-hidden text-sm">
-//                   <div className="flex justify-between p-3 border-b bg-white">
-//                     <span className="text-muted-foreground">Confirmed By</span>
-//                     <span className="font-medium text-right">Buyer</span>
-//                   </div>
-//                   <div className="flex justify-between p-3 bg-slate-50/50">
-//                     <span className="text-muted-foreground">Confirmation Date</span>
-//                     <span className="font-medium text-right">{order.dateCreated}</span>
-//                   </div>
-//                 </div>
-//               </div>
-//             </>
-//           )}
+  if (isLoading) return <Loading />;
 
-//         </div>
-//       </DialogContent>
-//     </Dialog>
-//   );
-// }
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-125">
+        <DialogHeader className="flex flex-row items-center justify-between pb-2 border-b">
+          <DialogTitle className="flex items-center gap-3">
+            <span>Order {order.id}</span>
+            {getStatusBadge(order.status)}
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="py-4 space-y-6">
+          {order.status === "PENDING_PAYMENT" && (
+            <div className="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-md text-sm flex gap-2">
+              <AlertCircle className="w-5 h-5 shrink-0" />
+              <p>
+                Awaiting Payment — Send the payment link to the buyer. Payment
+                must be received within 30 minutes.
+              </p>
+            </div>
+          )}
+
+          {order.status === "PAID_IN_ESCROW" && (
+            <div className="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-md text-sm flex gap-2">
+              <AlertCircle className="w-5 h-5 shrink-0" />
+              <p>
+                Payment confirmed and held in escrow. Now package the item and
+                arrange delivery with a courier.
+              </p>
+            </div>
+          )}
+
+          {order.status === "SETTLED" && (
+            <div className="bg-green-50 border border-green-200 text-green-800 p-3 rounded-md text-sm flex gap-2">
+              <CheckCircle className="w-5 h-5 shrink-0 text-green-600" />
+              <p>
+                Payout Completed — ₦{order.amount_paid.toLocaleString()} transferred
+                to your GTBank account
+              </p>
+            </div>
+          )}
+
+          <div>
+            <h4 className="font-semibold text-sm mb-3">Order Details</h4>
+            <div className="border rounded-md overflow-hidden text-sm">
+              <div className="flex justify-between p-3 border-b bg-slate-50/50">
+                <span className="text-muted-foreground">Item</span>
+                <span className="font-medium text-right">{order.item_name}</span>
+              </div>
+              <div className="flex justify-between p-3 border-b bg-white">
+                <span className="text-muted-foreground">Amount</span>
+                <span className="font-medium text-right">
+                  ₦{order.expected_amount.toLocaleString()}
+                </span>
+              </div>
+              <div className="flex justify-between p-3 border-b bg-slate-50/50">
+                <span className="text-muted-foreground">Buyer Phone</span>
+                <span className="font-medium text-right">{order.buyer_phone ?? "Not provided"}</span>
+              </div>
+              <div className="flex justify-between p-3 border-b bg-white">
+                <span className="text-muted-foreground">Delivery Address</span>
+                <span
+                  className="font-medium text-right max-w-50 truncate"
+                  // title={order.delivery_address}
+                >
+                  {order.delivery_address}
+                </span>
+              </div>
+              <div className="flex justify-between p-3 bg-slate-50/50">
+                <span className="text-muted-foreground">Date Created</span>
+                <span className="font-medium text-right">
+                  new Date(order.created_at).toLocaleString()
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {order.status === "PENDING_PAYMENT" && (
+            <div>
+              <h4 className="font-semibold text-sm mb-3">
+                Resend Payment Link
+              </h4>
+              <div className="flex items-center gap-2 p-3 bg-secondary border rounded-md text-left mb-3">
+                <Input
+                  readOnly
+                  value={`https://vouch.link/pay/${order.id}`}
+                  className="font-mono text-sm bg-transparent border-none focus-visible:ring-0 px-0 h-auto"
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => copyLink(`https://vouch.link/pay/${order.id}`)}
+                >
+                  <Copy className="w-4 h-4" />
+                </Button>
+              </div>
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  className="flex-1 gap-2 border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10"
+                >
+                  <SiWhatsapp className="w-4 h-4" /> WhatsApp
+                </Button>
+                <Button
+                  variant="outline"
+                  className="flex-1 gap-2 border-pink-500 text-pink-600 hover:bg-pink-50"
+                >
+                  <SiInstagram className="w-4 h-4" /> Instagram DM
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {order.status === "PAID_IN_ESCROW" && (
+            <div className="space-y-3">
+              <Button
+                className="w-full"
+                onClick={() => {
+                  // updateOrderStatus(order.id, "DISPATCHED");
+                  onOpenChange(false);
+                  toast({ title: "Order marked as dispatched" });
+                }}
+              >
+                Mark as Dispatched
+              </Button>
+              <Button variant="outline" className="w-full">
+                Contact Support
+              </Button>
+            </div>
+          )}
+
+          {order.status === "REFUNDED" && (
+            <div>
+              <h4 className="font-semibold text-sm mb-3">Reason</h4>
+              <div className="mb-3">
+                <Badge
+                  variant="outline"
+                  className="bg-amber-50 text-amber-700 border-amber-200"
+                >
+                  Wrong item received
+                </Badge>
+              </div>
+              <div className="mb-4">
+                <span className="text-sm text-muted-foreground mb-1 block">
+                  Buyer Note:
+                </span>
+                <div className="p-3 bg-slate-50 border rounded-md text-sm italic text-slate-600">
+                  &quot;I ordered a black shoe but received a white one.&quot;
+                </div>
+              </div>
+              <Button className="w-full">Accept Dispute & Issue Refund</Button>
+            </div>
+          )}
+
+          {order.status === "SETTLED" && (
+            <>
+              <div>
+                <h4 className="font-semibold text-sm mb-3">Payout Details</h4>
+                <div className="border rounded-md overflow-hidden text-sm">
+                  <div className="flex justify-between p-3 border-b bg-white">
+                    <span className="text-muted-foreground">Payout Amount</span>
+                    <span className="font-medium text-right">
+                      ₦{order.amount_paid.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between p-3 border-b bg-slate-50/50">
+                    <span className="text-muted-foreground">Payout Date</span>
+                    <span className="font-medium text-right">
+                      new Date(order.created_at).toLocaleString()
+                    </span>
+                  </div>
+                  <div className="flex justify-between p-3 border-b bg-white">
+                    <span className="text-muted-foreground">Bank Account</span>
+                    <span className="font-medium text-right">
+                      GTBank • 0123456789
+                    </span>
+                  </div>
+                  <div className="flex justify-between p-3 bg-slate-50/50">
+                    <span className="text-muted-foreground">
+                      Transaction ID
+                    </span>
+                    <span className="font-medium text-right font-mono text-xs">
+                      TXN-2024-654321
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h4 className="font-semibold text-sm mb-3">
+                  Delivery Confirmation
+                </h4>
+                <div className="border rounded-md overflow-hidden text-sm">
+                  <div className="flex justify-between p-3 border-b bg-white">
+                    <span className="text-muted-foreground">Confirmed By</span>
+                    <span className="font-medium text-right">Buyer</span>
+                  </div>
+                  <div className="flex justify-between p-3 bg-slate-50/50">
+                    <span className="text-muted-foreground">
+                      Confirmation Date
+                    </span>
+                    <span className="font-medium text-right">
+                      new Date(order.created_at).toLocaleString()
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export function RiderLinkModal({
   open,
