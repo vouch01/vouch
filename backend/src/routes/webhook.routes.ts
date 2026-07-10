@@ -10,6 +10,7 @@ router.post("/nomba", verifySignature, async (req:any, res:any) => {
   const payload = req.body
   
   await paymentQueue.add('process-payment', payload)
+  console.log('payement-processing job queued')
 
   console.log('Webhook Received:', JSON.stringify(payload , null , 2));
   res.status(200).json({received: true})
