@@ -96,6 +96,7 @@ export const processOrderPayment = async (payload: any) => {
         }
 
         if (alreadyProcessed){
+            console.log("Payment already processed")
             return{ status: 409, success:false, message: "Payment already processed"}
         }
         
@@ -108,7 +109,7 @@ export const processOrderPayment = async (payload: any) => {
 
         const amount = koboToNombaFormat(order.expected_amount)
         console.log("order-amount", amount)
-        
+
         if(transactionAmount === amount){
             const pin =await generateUniqueOtp(4)
             const pinHash = await bcrypt.hash(pin, 10)
