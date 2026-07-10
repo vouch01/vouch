@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState } from "react";
@@ -8,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AppShell } from "@/components/app-shell";
-import { OrderDetailModal, RiderLinkModal } from "@/components/modals";
+import {  RiderLinkModal } from "@/components/modals";
 import { useOrders } from "@/hooks/use-orders";
 import { Order } from "@/types/orders";
 
@@ -168,7 +169,7 @@ export default function OrdersPage() {
         </div>
       </div>
 
-      <OrderDetailModal order={selectedOrder} open={orderModalOpen} onOpenChange={setOrderModalOpen} />
+      {/* <OrderDetailModal order={selectedOrder} open={orderModalOpen} onOpenChange={setOrderModalOpen} /> */}
       <RiderLinkModal open={riderModalOpen} onOpenChange={setRiderModalOpen} orderId={riderOrderId} />
     </AppShell>
   );

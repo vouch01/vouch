@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-hooks/incompatible-library */
 "use client";
 
 import { useState } from "react";
@@ -26,14 +28,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
+import { useCreateOrder } from "@/hooks/use-order";
 import { useOrders } from "@/hooks/use-orders";
-import { Order } from "@/types/orders";
+import { Order, CreatedOrder } from "@/types/order";
 
 export function CreateOrderModal({ open, onOpenChange }: { open: boolean, onOpenChange: (o: boolean) => void }) {
   const [step, setStep] = useState(1);
-  const { addOrder } = useOrders();
+  const { mutate: createOrder, isPending } = useCreateOrder();
   const { toast } = useToast();
-  const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
+  const [createdOrder, setCreatedOrder] = useState<CreatedOrder | null>(null);
 
   const formSchema = z.object({
     buyerPhone: z.string().optional(),
@@ -60,17 +63,29 @@ export function CreateOrderModal({ open, onOpenChange }: { open: boolean, onOpen
   };
 
   const handleConfirm = () => {
-    const values = form.getValues();
-    const newOrder = addOrder({
-      item: values.itemDescription,
+
+  const values = form.watch();
+
+  createOrder(
+    {
+      buyer_phone: values.buyerPhone || "",
+      item_description: values.itemDescription,
       amount: values.amount,
-      buyer: values.buyerPhone || "N/A",
-      deliveryAddress: values.deliveryAddress,
-      notes: values.notes,
-    });
-    setCreatedOrder(newOrder as Order);
-    setStep(3);
-  };
+      delivery_address: values.deliveryAddress,
+      additional_notes: values.notes || "",
+    },
+    {
+      onSuccess: (response) => {
+        setCreatedOrder({
+          ...response.data,
+          escrowLink: response.escrowLink,
+        });
+
+        setStep(3);
+      },
+    }
+  );
+};
 
   const resetAndClose = () => {
     onOpenChange(false);
@@ -94,11 +109,11 @@ export function CreateOrderModal({ open, onOpenChange }: { open: boolean, onOpen
         {step < 3 && (
           <div className="mb-4">
             <div className="flex gap-2 mb-2">
-              <div className={`h-1 flex-1 rounded-full ${step >= 1 ? 'bg-primary' : 'bg-slate-200'}`}></div>
-              <div className={`h-1 flex-1 rounded-full ${step >= 2 ? 'bg-primary' : 'bg-slate-200'}`}></div>
-              <div className={`h-1 flex-1 rounded-full ${step >= 3 ? 'bg-primary' : 'bg-slate-200'}`}></div>
+              <div className={`h-1 flex-1 rounded-full ${step >= 1 ? 'bg-green-500' : 'bg-slate-200'}`}></div>
+              <div className={`h-1 flex-1 rounded-full ${step >= 2 ? 'bg-green-500' : 'bg-slate-200'}`}></div>
+              <div className={`h-1 flex-1 rounded-full ${step >= 3 ? 'bg-green-500' : 'bg-slate-200'}`}></div>
             </div>
-            <p className="text-xs text-muted-foreground font-medium text-center">Step {step} of 3</p>
+            <p className="text-xs text-muted-foreground font-medium text-center md:text-start">Step {step} of 3</p>
           </div>
         )}
 
@@ -235,7 +250,7 @@ export function CreateOrderModal({ open, onOpenChange }: { open: boolean, onOpen
             </div>
 
             <div className="flex gap-3 pt-2">
-              <Button variant="outline" className="flex-1 gap-2 border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10" onClick={() => window.open(`https://wa.me/?text=Pay for ${createdOrder.item} here: https://vouch.link/pay/${createdOrder.id}`)}>
+              <Button variant="outline" className="flex-1 gap-2 border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10" onClick={() => window.open(`https://wa.me/?text=Pay for ${createdOrder.item_description} here: https://vouch.link/pay/${createdOrder.id}`)}>
                 <SiWhatsapp className="w-4 h-4" /> WhatsApp
               </Button>
               <Button variant="outline" className="flex-1 gap-2 border-pink-500 text-pink-600 hover:bg-pink-50">
@@ -249,180 +264,180 @@ export function CreateOrderModal({ open, onOpenChange }: { open: boolean, onOpen
   );
 }
 
-export function OrderDetailModal({ order, open, onOpenChange }: { order: Order | null, open: boolean, onOpenChange: (o: boolean) => void }) {
-  const { updateOrderStatus } = useOrders();
-  const { toast } = useToast();
+// export function OrderDetailModal({ order, open, onOpenChange }: { order: Order | null, open: boolean, onOpenChange: (o: boolean) => void }) {
+//   const { updateOrderStatus } = useOrders();
+//   const { toast } = useToast();
 
-  if (!order) return null;
+//   if (!order) return null;
 
-  const copyLink = (link: string) => {
-    navigator.clipboard.writeText(link);
-    toast({ title: "Copied to clipboard" });
-  };
+//   const copyLink = (link: string) => {
+//     navigator.clipboard.writeText(link);
+//     toast({ title: "Copied to clipboard" });
+//   };
 
-  const getStatusBadge = (status: string) => {
-    switch(status) {
-      case 'PENDING': return <Badge variant="secondary">Pending Payment</Badge>;
-      case 'PAID_IN_ESCROW': return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 border border-amber-200">Ready to Ship</Badge>;
-      case 'DISPATCHED': return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 border border-blue-200">Dispatched</Badge>;
-      case 'SETTLED': return <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border border-green-200">Settled</Badge>;
-      case 'DISPUTED': return <Badge className="bg-pink-100 text-pink-800 hover:bg-pink-100 border border-pink-200">Disputed</Badge>;
-      default: return <Badge variant="outline">{status}</Badge>;
-    }
-  };
+//   const getStatusBadge = (status: string) => {
+//     switch(status) {
+//       case 'PENDING': return <Badge variant="secondary">Pending Payment</Badge>;
+//       case 'PAID_IN_ESCROW': return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 border border-amber-200">Ready to Ship</Badge>;
+//       case 'DISPATCHED': return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 border border-blue-200">Dispatched</Badge>;
+//       case 'SETTLED': return <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border border-green-200">Settled</Badge>;
+//       case 'DISPUTED': return <Badge className="bg-pink-100 text-pink-800 hover:bg-pink-100 border border-pink-200">Disputed</Badge>;
+//       default: return <Badge variant="outline">{status}</Badge>;
+//     }
+//   };
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-125">
-        <DialogHeader className="flex flex-row items-center justify-between pb-2 border-b">
-          <DialogTitle className="flex items-center gap-3">
-            <span>Order {order.id}</span>
-            {getStatusBadge(order.status)}
-          </DialogTitle>
-        </DialogHeader>
+//   return (
+//     <Dialog open={open} onOpenChange={onOpenChange}>
+//       <DialogContent className="sm:max-w-125">
+//         <DialogHeader className="flex flex-row items-center justify-between pb-2 border-b">
+//           <DialogTitle className="flex items-center gap-3">
+//             <span>Order {order.id}</span>
+//             {getStatusBadge(order.status)}
+//           </DialogTitle>
+//         </DialogHeader>
 
-        <div className="py-4 space-y-6">
-          {order.status === 'PENDING' && (
-            <div className="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-md text-sm flex gap-2">
-              <AlertCircle className="w-5 h-5 shrink-0" />
-              <p>Awaiting Payment — Send the payment link to the buyer. Payment must be received within 30 minutes.</p>
-            </div>
-          )}
+//         <div className="py-4 space-y-6">
+//           {order.status === 'PENDING' && (
+//             <div className="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-md text-sm flex gap-2">
+//               <AlertCircle className="w-5 h-5 shrink-0" />
+//               <p>Awaiting Payment — Send the payment link to the buyer. Payment must be received within 30 minutes.</p>
+//             </div>
+//           )}
 
-          {order.status === 'PAID_IN_ESCROW' && (
-            <div className="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-md text-sm flex gap-2">
-              <AlertCircle className="w-5 h-5 shrink-0" />
-              <p>Payment confirmed and held in escrow. Now package the item and arrange delivery with a courier.</p>
-            </div>
-          )}
+//           {order.status === 'PAID_IN_ESCROW' && (
+//             <div className="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-md text-sm flex gap-2">
+//               <AlertCircle className="w-5 h-5 shrink-0" />
+//               <p>Payment confirmed and held in escrow. Now package the item and arrange delivery with a courier.</p>
+//             </div>
+//           )}
 
-          {order.status === 'SETTLED' && (
-            <div className="bg-green-50 border border-green-200 text-green-800 p-3 rounded-md text-sm flex gap-2">
-              <CheckCircle className="w-5 h-5 shrink-0 text-green-600" />
-              <p>Payout Completed — ₦{order.amount.toLocaleString()} transferred to your GTBank account</p>
-            </div>
-          )}
+//           {order.status === 'SETTLED' && (
+//             <div className="bg-green-50 border border-green-200 text-green-800 p-3 rounded-md text-sm flex gap-2">
+//               <CheckCircle className="w-5 h-5 shrink-0 text-green-600" />
+//               <p>Payout Completed — ₦{order.amount.toLocaleString()} transferred to your GTBank account</p>
+//             </div>
+//           )}
 
-          <div>
-            <h4 className="font-semibold text-sm mb-3">Order Details</h4>
-            <div className="border rounded-md overflow-hidden text-sm">
-              <div className="flex justify-between p-3 border-b bg-slate-50/50">
-                <span className="text-muted-foreground">Item</span>
-                <span className="font-medium text-right">{order.item}</span>
-              </div>
-              <div className="flex justify-between p-3 border-b bg-white">
-                <span className="text-muted-foreground">Amount</span>
-                <span className="font-medium text-right">₦{order.amount.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between p-3 border-b bg-slate-50/50">
-                <span className="text-muted-foreground">Buyer Phone</span>
-                <span className="font-medium text-right">{order.buyer}</span>
-              </div>
-              <div className="flex justify-between p-3 border-b bg-white">
-                <span className="text-muted-foreground">Delivery Address</span>
-                <span className="font-medium text-right max-w-50 truncate" title={order.deliveryAddress}>{order.deliveryAddress}</span>
-              </div>
-              <div className="flex justify-between p-3 bg-slate-50/50">
-                <span className="text-muted-foreground">Date Created</span>
-                <span className="font-medium text-right">{order.dateCreated}</span>
-              </div>
-            </div>
-          </div>
+//           <div>
+//             <h4 className="font-semibold text-sm mb-3">Order Details</h4>
+//             <div className="border rounded-md overflow-hidden text-sm">
+//               <div className="flex justify-between p-3 border-b bg-slate-50/50">
+//                 <span className="text-muted-foreground">Item</span>
+//                 <span className="font-medium text-right">{order.item}</span>
+//               </div>
+//               <div className="flex justify-between p-3 border-b bg-white">
+//                 <span className="text-muted-foreground">Amount</span>
+//                 <span className="font-medium text-right">₦{order.amount.toLocaleString()}</span>
+//               </div>
+//               <div className="flex justify-between p-3 border-b bg-slate-50/50">
+//                 <span className="text-muted-foreground">Buyer Phone</span>
+//                 <span className="font-medium text-right">{order.buyer}</span>
+//               </div>
+//               <div className="flex justify-between p-3 border-b bg-white">
+//                 <span className="text-muted-foreground">Delivery Address</span>
+//                 <span className="font-medium text-right max-w-50 truncate" title={order.deliveryAddress}>{order.deliveryAddress}</span>
+//               </div>
+//               <div className="flex justify-between p-3 bg-slate-50/50">
+//                 <span className="text-muted-foreground">Date Created</span>
+//                 <span className="font-medium text-right">{order.dateCreated}</span>
+//               </div>
+//             </div>
+//           </div>
 
-          {order.status === 'PENDING' && (
-            <div>
-              <h4 className="font-semibold text-sm mb-3">Resend Payment Link</h4>
-              <div className="flex items-center gap-2 p-3 bg-secondary border rounded-md text-left mb-3">
-                <Input readOnly value={`https://vouch.link/pay/${order.id}`} className="font-mono text-sm bg-transparent border-none focus-visible:ring-0 px-0 h-auto" />
-                <Button variant="ghost" size="sm" onClick={() => copyLink(`https://vouch.link/pay/${order.id}`)}><Copy className="w-4 h-4" /></Button>
-              </div>
-              <div className="flex gap-3">
-                <Button variant="outline" className="flex-1 gap-2 border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10">
-                  <SiWhatsapp className="w-4 h-4" /> WhatsApp
-                </Button>
-                <Button variant="outline" className="flex-1 gap-2 border-pink-500 text-pink-600 hover:bg-pink-50">
-                  <SiInstagram className="w-4 h-4" /> Instagram DM
-                </Button>
-              </div>
-            </div>
-          )}
+//           {order.status === 'PENDING' && (
+//             <div>
+//               <h4 className="font-semibold text-sm mb-3">Resend Payment Link</h4>
+//               <div className="flex items-center gap-2 p-3 bg-secondary border rounded-md text-left mb-3">
+//                 <Input readOnly value={`https://vouch.link/pay/${order.id}`} className="font-mono text-sm bg-transparent border-none focus-visible:ring-0 px-0 h-auto" />
+//                 <Button variant="ghost" size="sm" onClick={() => copyLink(`https://vouch.link/pay/${order.id}`)}><Copy className="w-4 h-4" /></Button>
+//               </div>
+//               <div className="flex gap-3">
+//                 <Button variant="outline" className="flex-1 gap-2 border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10">
+//                   <SiWhatsapp className="w-4 h-4" /> WhatsApp
+//                 </Button>
+//                 <Button variant="outline" className="flex-1 gap-2 border-pink-500 text-pink-600 hover:bg-pink-50">
+//                   <SiInstagram className="w-4 h-4" /> Instagram DM
+//                 </Button>
+//               </div>
+//             </div>
+//           )}
 
-          {order.status === 'PAID_IN_ESCROW' && (
-            <div className="space-y-3">
-              <Button 
-                className="w-full" 
-                onClick={() => {
-                  updateOrderStatus(order.id, 'DISPATCHED');
-                  onOpenChange(false);
-                  toast({ title: "Order marked as dispatched" });
-                }}
-              >
-                Mark as Dispatched
-              </Button>
-              <Button variant="outline" className="w-full">Contact Support</Button>
-            </div>
-          )}
+//           {order.status === 'PAID_IN_ESCROW' && (
+//             <div className="space-y-3">
+//               <Button 
+//                 className="w-full" 
+//                 onClick={() => {
+//                   updateOrderStatus(order.id, 'DISPATCHED');
+//                   onOpenChange(false);
+//                   toast({ title: "Order marked as dispatched" });
+//                 }}
+//               >
+//                 Mark as Dispatched
+//               </Button>
+//               <Button variant="outline" className="w-full">Contact Support</Button>
+//             </div>
+//           )}
 
-          {order.status === 'DISPUTED' && (
-            <div>
-              <h4 className="font-semibold text-sm mb-3">Reason</h4>
-              <div className="mb-3">
-                <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">Wrong item received</Badge>
-              </div>
-              <div className="mb-4">
-                <span className="text-sm text-muted-foreground mb-1 block">Buyer Note:</span>
-                <div className="p-3 bg-slate-50 border rounded-md text-sm italic text-slate-600">
-                  &quot;I ordered a black shoe but received a white one.&quot;
-                </div>
-              </div>
-              <Button className="w-full">Accept Dispute & Issue Refund</Button>
-            </div>
-          )}
+//           {order.status === 'DISPUTED' && (
+//             <div>
+//               <h4 className="font-semibold text-sm mb-3">Reason</h4>
+//               <div className="mb-3">
+//                 <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">Wrong item received</Badge>
+//               </div>
+//               <div className="mb-4">
+//                 <span className="text-sm text-muted-foreground mb-1 block">Buyer Note:</span>
+//                 <div className="p-3 bg-slate-50 border rounded-md text-sm italic text-slate-600">
+//                   &quot;I ordered a black shoe but received a white one.&quot;
+//                 </div>
+//               </div>
+//               <Button className="w-full">Accept Dispute & Issue Refund</Button>
+//             </div>
+//           )}
 
-          {order.status === 'SETTLED' && (
-            <>
-              <div>
-                <h4 className="font-semibold text-sm mb-3">Payout Details</h4>
-                <div className="border rounded-md overflow-hidden text-sm">
-                  <div className="flex justify-between p-3 border-b bg-white">
-                    <span className="text-muted-foreground">Payout Amount</span>
-                    <span className="font-medium text-right">₦{order.amount.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between p-3 border-b bg-slate-50/50">
-                    <span className="text-muted-foreground">Payout Date</span>
-                    <span className="font-medium text-right">{order.dateCreated}</span>
-                  </div>
-                  <div className="flex justify-between p-3 border-b bg-white">
-                    <span className="text-muted-foreground">Bank Account</span>
-                    <span className="font-medium text-right">GTBank • 0123456789</span>
-                  </div>
-                  <div className="flex justify-between p-3 bg-slate-50/50">
-                    <span className="text-muted-foreground">Transaction ID</span>
-                    <span className="font-medium text-right font-mono text-xs">TXN-2024-654321</span>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <h4 className="font-semibold text-sm mb-3">Delivery Confirmation</h4>
-                <div className="border rounded-md overflow-hidden text-sm">
-                  <div className="flex justify-between p-3 border-b bg-white">
-                    <span className="text-muted-foreground">Confirmed By</span>
-                    <span className="font-medium text-right">Buyer</span>
-                  </div>
-                  <div className="flex justify-between p-3 bg-slate-50/50">
-                    <span className="text-muted-foreground">Confirmation Date</span>
-                    <span className="font-medium text-right">{order.dateCreated}</span>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
+//           {order.status === 'SETTLED' && (
+//             <>
+//               <div>
+//                 <h4 className="font-semibold text-sm mb-3">Payout Details</h4>
+//                 <div className="border rounded-md overflow-hidden text-sm">
+//                   <div className="flex justify-between p-3 border-b bg-white">
+//                     <span className="text-muted-foreground">Payout Amount</span>
+//                     <span className="font-medium text-right">₦{order.amount.toLocaleString()}</span>
+//                   </div>
+//                   <div className="flex justify-between p-3 border-b bg-slate-50/50">
+//                     <span className="text-muted-foreground">Payout Date</span>
+//                     <span className="font-medium text-right">{order.dateCreated}</span>
+//                   </div>
+//                   <div className="flex justify-between p-3 border-b bg-white">
+//                     <span className="text-muted-foreground">Bank Account</span>
+//                     <span className="font-medium text-right">GTBank • 0123456789</span>
+//                   </div>
+//                   <div className="flex justify-between p-3 bg-slate-50/50">
+//                     <span className="text-muted-foreground">Transaction ID</span>
+//                     <span className="font-medium text-right font-mono text-xs">TXN-2024-654321</span>
+//                   </div>
+//                 </div>
+//               </div>
+//               <div>
+//                 <h4 className="font-semibold text-sm mb-3">Delivery Confirmation</h4>
+//                 <div className="border rounded-md overflow-hidden text-sm">
+//                   <div className="flex justify-between p-3 border-b bg-white">
+//                     <span className="text-muted-foreground">Confirmed By</span>
+//                     <span className="font-medium text-right">Buyer</span>
+//                   </div>
+//                   <div className="flex justify-between p-3 bg-slate-50/50">
+//                     <span className="text-muted-foreground">Confirmation Date</span>
+//                     <span className="font-medium text-right">{order.dateCreated}</span>
+//                   </div>
+//                 </div>
+//               </div>
+//             </>
+//           )}
 
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
+//         </div>
+//       </DialogContent>
+//     </Dialog>
+//   );
+// }
 
 export function RiderLinkModal({ open, onOpenChange, orderId }: { open: boolean, onOpenChange: (o: boolean) => void, orderId: string }) {
   const { toast } = useToast();

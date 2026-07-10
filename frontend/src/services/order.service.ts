@@ -1,19 +1,18 @@
 import api from "@/lib/axios";
-import { OrderResponse } from "@/types/order";
-
-
-
+import {
+  CreateOrderDto,
+  CreateOrderResponse,
+} from "@/types/order";
 
 export const orderService = {
-
-initializePayment: async (referenceId: string) => {
-    return api.post(`/orders/${referenceId}/pay`);
-},
-
-  getOrder: async (referenceId: string) => {
-    const { data } = await api.get<OrderResponse>(
-      `/orders/${referenceId}`
-    );
+  createOrder: async (
+    payload: CreateOrderDto
+  ) => {
+    const { data } =
+      await api.post<CreateOrderResponse>(
+        "/order/create",
+        payload
+      );
 
     return data;
   },
