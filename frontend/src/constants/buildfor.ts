@@ -13,7 +13,7 @@ export const buildForCards = [
       "Automatic payouts to your back account",
       "Real-time order and payment tracking",
     ],
-    image: "/images/land-img-3.png",
+    image: "/images/land-img-6.png",
   },
   {
     title: "For Buyers",
@@ -26,6 +26,6 @@ export const buildForCards = [
       "Raise disputes when needed",
       "Get refunds if issues aren’t resolved",
     ],
-    image: "/images/land-img-4.png",
+    image: "/images/land-img-5.png",
   },
 ];

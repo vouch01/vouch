@@ -1,12 +1,14 @@
-/* eslint-disable react-hooks/set-state-in-effect*/
+
 
 "use client";
 
+import { useMe } from "@/hooks/use-me";
+import { QUERY_KEYS } from "@/lib/query-keys";
+import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   createContext,
   useContext,
-  useEffect,
-  useState,
   type ReactNode
 } from "react";
 
@@ -24,25 +26,45 @@ export function AuthProvider({
 }: {
   children: ReactNode;
 }) {
-  const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setAuthenticated] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
+  const router = useRouter();
+  const queryClient = useQueryClient();
 
-    setAuthenticated(!!token);
-    setLoading(false);
-  }, []);
+  const {
+  isPending,
+  isSuccess,
+  isError,
+} = useMe();
 
-  const login = (token: string) => {
+const token =
+  typeof window !== "undefined"
+    ? localStorage.getItem("accessToken")
+    : null;
+
+const hasToken = !!token;
+
+const loading = hasToken && isPending;
+
+const isAuthenticated = hasToken && isSuccess;
+
+
+  const login = async (token: string) => {
   localStorage.setItem("accessToken", token);
-  setAuthenticated(true);
+
+  await queryClient.invalidateQueries({
+    queryKey: QUERY_KEYS.USER,
+  });
 };
 
   const logout = () => {
     localStorage.removeItem("accessToken");
-    setAuthenticated(false);
-  };
+
+    queryClient.removeQueries({
+        queryKey: QUERY_KEYS.USER,
+    });
+
+    router.replace("/login");
+};
 
   return (
     <AuthContext.Provider

@@ -48,7 +48,6 @@ export default function Login() {
     <AuthShell>
       <div className="bg-white rounded-2xl shadow-2xl px-10 py-10">
           <div className="flex flex-col items-center mb-7">
-            {/* <img src={vouchLogo} alt="Vouch" className="h-8 w-auto mb-3" /> */}
             <Image 
             src={"/logos/vouch-logo.png"}
             alt="Vouch"
@@ -134,7 +133,7 @@ export default function Login() {
 
               <Button
                 type="submit"
-                className="w-full h-11 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium"
+                className="w-full h-11 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium cursor-pointer"
                 data-testid="button-login"
                 disabled={isPending}
 
