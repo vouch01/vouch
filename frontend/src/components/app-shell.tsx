@@ -26,6 +26,7 @@ import { BsHandbag } from "react-icons/bs";
 import { PiGear } from "react-icons/pi";
 import { useAuthContext } from "@/providers/auth-provider";
 import Loading from "./Loading";
+import { useMe } from "@/hooks/use-me";
 
 interface AppShellProps {
   children: ReactNode;
@@ -39,7 +40,9 @@ export function AppShell({ children, pageTitle, headerRight }: AppShellProps) {
 
   const { loading, isAuthenticated, logout } = useAuthContext();
 
-  useEffect(() => {
+  
+
+useEffect(() => {
     if (!loading && !isAuthenticated) {
       router.replace("/login");
     }
@@ -193,6 +196,9 @@ function ProfileModal() {
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const { data } = useMe();
+
+const vendor = data?.data;
 
   return (
     <Dialog>
@@ -216,7 +222,7 @@ function ProfileModal() {
               <User className="w-6 h-6 text-muted-foreground" />
             </div>
             <div>
-              <h3 className="font-semibold text-lg">TechHub Store</h3>
+              <h3 className="font-semibold text-lg">{vendor?.business_name}</h3>
               <p className="text-sm text-muted-foreground">ID: VND-084</p>
             </div>
           </div>

@@ -6,9 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AppShell } from "@/components/app-shell";
-import { CreateOrderModal, OrderDetailModal, RiderLinkModal } from "@/components/modals";
+import { CreateOrderModal, 
+  // OrderDetailModal, 
+  RiderLinkModal } from "@/components/modals";
 import { useOrders } from "@/hooks/use-orders";
 import { Order } from "@/types/orders";
+import { useMe } from "@/hooks/use-me";
 
 export default function VendorDashboard() {
   const { orders } = useOrders();
@@ -17,6 +20,10 @@ export default function VendorDashboard() {
   const [orderModalOpen, setOrderModalOpen] = useState(false);
   const [riderModalOpen, setRiderModalOpen] = useState(false);
   const [riderOrderId, setRiderOrderId] = useState("");
+
+  const { data } = useMe();
+  
+  const vendor = data?.data;
 
   const pendingOrders = orders.filter((o) => o.status === "PENDING").length;
   const readyOrders = orders.filter((o) => o.status === "PAID_IN_ESCROW").length;
@@ -52,7 +59,7 @@ export default function VendorDashboard() {
         {/* Section 1 - Welcome bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Welcome Back John!</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Welcome Back {vendor?.business_name}</h1>
             <p className="text-sm text-muted-foreground mt-1">Manage your escrow transactions and track payments</p>
           </div>
           <Button onClick={() => setCreateModalOpen(true)} className="shadow-sm">
@@ -154,7 +161,7 @@ export default function VendorDashboard() {
       </div>
 
       <CreateOrderModal open={createModalOpen} onOpenChange={setCreateModalOpen} />
-      <OrderDetailModal order={selectedOrder} open={orderModalOpen} onOpenChange={setOrderModalOpen} />
+      {/* <OrderDetailModal order={selectedOrder} open={orderModalOpen} onOpenChange={setOrderModalOpen} /> */}
       <RiderLinkModal open={riderModalOpen} onOpenChange={setRiderModalOpen} orderId={riderOrderId} />
     </AppShell>
   );
