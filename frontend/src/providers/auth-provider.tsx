@@ -30,19 +30,31 @@ export function AuthProvider({
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { data, isLoading } = useMe();
+  const {
+  isPending,
+  isSuccess,
+  isError,
+} = useMe();
 
-  const loading = isLoading;
+const token =
+  typeof window !== "undefined"
+    ? localStorage.getItem("accessToken")
+    : null;
 
-const isAuthenticated = !!data?.data;
+const hasToken = !!token;
+
+const loading = hasToken && isPending;
+
+const isAuthenticated = hasToken && isSuccess;
 
 
-  const login = (token: string) => {
-    localStorage.setItem("accessToken", token);
-    queryClient.invalidateQueries({
-      queryKey: QUERY_KEYS.USER,
-    });
-  };
+  const login = async (token: string) => {
+  localStorage.setItem("accessToken", token);
+
+  await queryClient.invalidateQueries({
+    queryKey: QUERY_KEYS.USER,
+  });
+};
 
   const logout = () => {
     localStorage.removeItem("accessToken");

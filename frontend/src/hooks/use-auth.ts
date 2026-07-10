@@ -4,7 +4,8 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { authService } from "@/services/auth.service";
-import { QUERY_KEYS } from "@/lib/query-keys";
+// import { QUERY_KEYS } from "@/lib/query-keys";
+import { useRouter } from "next/navigation";
 import { useToast } from "../components/ui/use-toast";
 import type {
   LoginDto,
@@ -16,21 +17,23 @@ import type {
 import { useAuthContext } from "@/providers/auth-provider";
 
 export function useLogin() {
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
   const { toast } = useToast();
   const { login } = useAuthContext();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: (payload: LoginDto) => authService.login(payload),
 
-    onSuccess: (data) => {
-      login(data.token);
-      queryClient.setQueryData(QUERY_KEYS.USER, data.data);
+    onSuccess: async (data) => {
+      await login(data.token);
+      // queryClient.setQueryData(QUERY_KEYS.USER, data.data);
 
       toast({
         title: "Login Successful",
         description: data.message || "You have been logged in successfully.",
       });
+      router.replace("/vendor/dashboard");
     },
 
     onError: (error: any) => {

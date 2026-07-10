@@ -95,7 +95,7 @@ export default function VendorDashboard() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-bold text-foreground">Recent Orders</h2>
-            <Link href="/orders" className="text-sm font-medium text-primary hover:underline">View All</Link>
+            <Link href="/vendor/orders" className="text-sm font-medium text-primary hover:underline">View All</Link>
           </div>
           <div className="bg-white border rounded-lg overflow-hidden">
             <Table>
