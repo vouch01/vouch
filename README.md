@@ -57,27 +57,29 @@ Vouch is structured as a high-performance monorepo utilizing a state-driven ledg
 │   ├── vite.config.ts        # Vite bundler settings
 │   └── package.json          # Frontend dependencies, scripts, metadata
 │
-├── backend                   # TypeScript + Express + Drizzle
-│   ├── src
-│   │   ├── db
-│   │   │   ├── schema.ts     # Drizzle schema definitions (Orders, History)
-│   │   │   └── index.ts      # Database connection (Neon/Supabase client)
-│   │   ├── services
-│   │   │   └── nomba.ts      # Third-party API wrapper
-│   │   ├── controllers
-│   │   │   ├── auth.controller.ts
-│   │   │   ├── order.controller.ts
-│   │   │   ├── payment.controller.ts
-│   │   │   └── profile.controller.ts
-│   │   ├── routes
-│   │   │   ├── auth.routes.ts
-│   │   │   ├── index.routes.ts
-│   │   │   ├── order.routes.ts
-│   │   │   └── payment.routes.ts
+├── backend                   # Vouch's infra
+│   ├── src                   # TypeScript + Express + Drizzle
+│   │   ├── __tests__         # Functional tests 
+│   │   ├── controllers       # HTTP parser
+│   │   ├── db                # Schema and db config
+│   │   ├── lib               # Redis, BullMQ queues & Resend config
+│   │   ├── middleware        # Auth &  webhook 
+│   │   ├── routes            # Routes Definition
+│   │   ├── servis            # Business logic , Mail templates , tokens  & Nomba wrapper 
+│   │   ├── utils             # Helpers 
+│   │   ├── worker            # Background workers
+│   │   ├── app.ts            # CORS , APP, health check
 │   │   └── index.ts          # Server entry point, express app config, node-cron
+│   └── .env.example          # Environment variables  example
+│   ├── .gitignore           
 │   ├── drizzle.config.ts     # Drizzle CLI configuration
-│   ├── package.json
+│   ├── jest.config.ts        # Jest env configuration
+│   ├── jest.setup.ts         # Jest queue-mock setup
+│   ├── pnpm-lock.yaml   
+│   ├── README.md             # Vouch's Backend Overview  
+│   ├── package.json         
 │   └── tsconfig.json
+│   └── tsconfig.spec.json     # Jest for typescript  configuration  
 │
 └── README.md
 ```
