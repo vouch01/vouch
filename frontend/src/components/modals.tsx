@@ -32,7 +32,13 @@ import { useCreateOrder } from "@/hooks/use-order";
 import { useOrders } from "@/hooks/use-orders";
 import { Order, CreatedOrder } from "@/types/order";
 
-export function CreateOrderModal({ open, onOpenChange }: { open: boolean, onOpenChange: (o: boolean) => void }) {
+export function CreateOrderModal({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+}) {
   const [step, setStep] = useState(1);
   const { mutate: createOrder, isPending } = useCreateOrder();
   const { toast } = useToast();
@@ -40,6 +46,7 @@ export function CreateOrderModal({ open, onOpenChange }: { open: boolean, onOpen
 
   const formSchema = z.object({
     buyerPhone: z.string().optional(),
+    itemName: z.string().min(1, "Item description is required"),
     itemDescription: z.string().min(3, "Item description is required"),
     amount: z.coerce.number().min(100, "Amount must be at least 100 NGN"),
     deliveryAddress: z.string().min(5, "Delivery address is required"),
@@ -50,6 +57,7 @@ export function CreateOrderModal({ open, onOpenChange }: { open: boolean, onOpen
     resolver: zodResolver(formSchema),
     defaultValues: {
       buyerPhone: "",
+      itemName: "",
       itemDescription: "",
       amount: 0,
       deliveryAddress: "",
@@ -63,29 +71,29 @@ export function CreateOrderModal({ open, onOpenChange }: { open: boolean, onOpen
   };
 
   const handleConfirm = () => {
+    const values = form.watch();
 
-  const values = form.watch();
-
-  createOrder(
-    {
-      buyer_phone: values.buyerPhone || "",
-      item_description: values.itemDescription,
-      amount: values.amount,
-      delivery_address: values.deliveryAddress,
-      additional_notes: values.notes || "",
-    },
-    {
-      onSuccess: (response) => {
-        setCreatedOrder({
-          ...response.data,
-          escrowLink: response.escrowLink,
-        });
-
-        setStep(3);
+    createOrder(
+      {
+        buyer_phone: values.buyerPhone || "",
+        item_name: values.itemName,
+        item_description: values.itemDescription,
+        amount: values.amount,
+        delivery_address: values.deliveryAddress,
+        additional_notes: values.notes || "",
       },
-    }
-  );
-};
+      {
+        onSuccess: (response) => {
+          setCreatedOrder({
+            ...response.data,
+            escrowLink: response.escrowLink,
+          });
+
+          setStep(3);
+        },
+      },
+    );
+  };
 
   const resetAndClose = () => {
     onOpenChange(false);
@@ -104,44 +112,83 @@ export function CreateOrderModal({ open, onOpenChange }: { open: boolean, onOpen
   const values = form.getValues();
 
   return (
-    <Dialog open={open} onOpenChange={(o) => { if(!o) resetAndClose(); }}>
-      <DialogContent className="sm:max-w-112.5">
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        if (!o) resetAndClose();
+      }}
+      
+    >
+      
+      <DialogContent className="sm:max-w-[50vw] p-0">
+        <DialogHeader className="border-b p-6">
+        <DialogTitle>
+          {step === 1 && "Create Order"}
+          {step === 2 && "Review Order"}
+          {step === 3 && "Share Payment Link"}
+        </DialogTitle>
+      </DialogHeader>
         {step < 3 && (
-          <div className="mb-4">
+          <div className="mb-4 px-6">
             <div className="flex gap-2 mb-2">
-              <div className={`h-1 flex-1 rounded-full ${step >= 1 ? 'bg-green-500' : 'bg-slate-200'}`}></div>
-              <div className={`h-1 flex-1 rounded-full ${step >= 2 ? 'bg-green-500' : 'bg-slate-200'}`}></div>
-              <div className={`h-1 flex-1 rounded-full ${step >= 3 ? 'bg-green-500' : 'bg-slate-200'}`}></div>
+              <div
+                className={`h-1 flex-1 rounded-full ${step >= 1 ? "bg-[#16A34A]" : "bg-slate-200"}`}
+              ></div>
+              <div
+                className={`h-1 flex-1 rounded-full ${step >= 2 ? "bg-[#16A34A]" : "bg-slate-200"}`}
+              ></div>
+              <div
+                className={`h-1 flex-1 rounded-full ${step >= 3 ? "bg-[#16A34A]" : "bg-slate-200"}`}
+              ></div>
             </div>
-            <p className="text-xs text-muted-foreground font-medium text-center md:text-start">Step {step} of 3</p>
+            <p className="text-xs text-muted-foreground font-medium text-center md:text-start">
+              Step {step} of 3
+            </p>
           </div>
         )}
 
-        <DialogHeader>
-          <DialogTitle>
-            {step === 1 && "Create Order"}
-            {step === 2 && "Review Order"}
-            {step === 3 && "Share Payment Link"}
-          </DialogTitle>
-        </DialogHeader>
-
         {step === 1 && (
           <Form {...form}>
-            <form className="space-y-4 pt-4">
-              <FormField
-                control={form.control}
-                name="buyerPhone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Buyer&apos;s Phone Number (Optional)</FormLabel>
-                    <FormControl>
-                      <Input placeholder="08012345678" {...field} />
-                    </FormControl>
-                    <p className="text-[11px] text-muted-foreground">The buyer will receive the payment link on this number</p>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <form className="space-y-4 py-4 px-6">
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="buyerPhone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Buyer&apos;s Contact{" "}
+                        <span className="font-regular text-muted-foreground text-[12px]">
+                          (Optional)
+                        </span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder="08012345678" {...field} />
+                      </FormControl>
+                      <p className="text-[11px] text-muted-foreground">
+                        The buyer will receive the payment link on this number
+                      </p>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="itemName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Item Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g iPhone 14 Pro" {...field} />
+                      </FormControl>
+                      <p className="text-[11px] text-muted-foreground">
+                        Name of item buyer is purchasing
+                      </p>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
               <FormField
                 control={form.control}
                 name="itemDescription"
@@ -149,9 +196,14 @@ export function CreateOrderModal({ open, onOpenChange }: { open: boolean, onOpen
                   <FormItem>
                     <FormLabel>Item Description</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g iPhone 14 Pro (256GB, Space Black)" {...field} />
+                      <Input
+                        placeholder="e.g UK-used (256GB, Space Black)"
+                        {...field}
+                      />
                     </FormControl>
-                    <p className="text-[11px] text-muted-foreground">Describe the item the buyer is purchasing</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      Describe the item the buyer is purchasing
+                    </p>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -165,7 +217,9 @@ export function CreateOrderModal({ open, onOpenChange }: { open: boolean, onOpen
                     <FormControl>
                       <Input type="number" placeholder="150000" {...field} />
                     </FormControl>
-                    <p className="text-[11px] text-muted-foreground">Total purchase amount</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      Total purchase amount
+                    </p>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -179,7 +233,9 @@ export function CreateOrderModal({ open, onOpenChange }: { open: boolean, onOpen
                     <FormControl>
                       <Input placeholder="Enter delivery address" {...field} />
                     </FormControl>
-                    <p className="text-[11px] text-muted-foreground">Where the buyer wants the item delivered</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      Where the buyer wants the item delivered
+                    </p>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -191,69 +247,146 @@ export function CreateOrderModal({ open, onOpenChange }: { open: boolean, onOpen
                   <FormItem>
                     <FormLabel>Additional Notes</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Add any special instructions..." {...field} />
+                      <Textarea
+                        placeholder="Add any special instructions..."
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <div className="flex gap-3 pt-4">
-                <Button type="button" variant="outline" className="flex-1 cursor-pointer" onClick={resetAndClose}>Cancel</Button>
-                <Button type="button" className="flex-1 cursor-pointer" onClick={handleNextToReview} data-testid="btn-next-review">Next: Review & Confirm</Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1 cursor-pointer"
+                  onClick={resetAndClose}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  className="flex-1 cursor-pointer"
+                  onClick={handleNextToReview}
+                  data-testid="btn-next-review"
+                >
+                  Next: Review & Confirm
+                </Button>
               </div>
             </form>
           </Form>
         )}
 
         {step === 2 && (
-          <div className="space-y-4 pt-4">
-            <div className="bg-slate-50 border rounded-md p-4 space-y-3">
-              <div className="flex justify-between border-b pb-2">
-                <span className="text-sm text-muted-foreground">Item</span>
-                <span className="text-sm font-medium">{values.itemDescription}</span>
+          <div className="space-y-4 py-4 px-6">
+            <div className="bg-[#F5F5F7] border rounded-md p-4 space-y-3">
+              <h2 className="font-normal text-[#1F1F1F] text-[14px]">Order Summary</h2>
+              <div className="flex justify-between pb-2">
+                <span className="text-[12px] text-muted-foreground">Item</span>
+                <span className="text-[12px] font-medium">
+                  {values.itemDescription}
+                </span>
               </div>
-              <div className="flex justify-between border-b pb-2">
-                <span className="text-sm text-muted-foreground">Amount</span>
-                <span className="text-sm font-medium">₦{Number(values.amount).toLocaleString('en-NG')}</span>
+              <div className="flex justify-between pb-2">
+                <span className="text-[12px] text-muted-foreground">Amount</span>
+                <span className="text-[12px] font-medium">
+                  ₦{Number(values.amount).toLocaleString("en-NG")}
+                </span>
               </div>
-              <div className="flex justify-between border-b pb-2">
-                <span className="text-sm text-muted-foreground">Buyer Phone</span>
-                <span className="text-sm font-medium">{values.buyerPhone || "N/A"}</span>
+              <div className="flex justify-between pb-2">
+                <span className="text-[12px] text-muted-foreground">
+                  Buyer Phone
+                </span>
+                <span className="text-[12px] font-medium">
+                  {values.buyerPhone || "N/A"}
+                </span>
               </div>
-              <div className="flex justify-between border-b pb-2">
-                <span className="text-sm text-muted-foreground">Delivery Address</span>
-                <span className="text-sm font-medium text-right max-w-50 truncate" title={values.deliveryAddress}>{values.deliveryAddress}</span>
+              <div className="flex justify-between pb-2">
+                <span className="text-[12px] text-muted-foreground">
+                  Delivery Address
+                </span>
+                <span
+                  className="text-[12px] font-medium text-right max-w-50 truncate"
+                  title={values.deliveryAddress}
+                >
+                  {values.deliveryAddress}
+                </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Notes</span>
-                <span className="text-sm font-medium text-right max-w-50 truncate">{values.notes || "None"}</span>
+                <span className="text-[12px] text-muted-foreground">Notes</span>
+                <span className="text-[12px] font-medium text-right max-w-50 truncate">
+                  {values.notes || "None"}
+                </span>
               </div>
             </div>
-            
+
             <div className="flex gap-3 pt-4">
-              <Button type="button" variant="outline" className="flex-1" onClick={() => setStep(1)}>Back</Button>
-              <Button type="button" className="flex-1" onClick={handleConfirm} data-testid="btn-confirm-order">Confirm & Create Link</Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1 border border-primary text-primary cursor-pointer"
+                onClick={() => setStep(1)}
+              >
+                Back
+              </Button>
+              <Button
+                type="button"
+                className="flex-1 cursor-pointer"
+                onClick={handleConfirm}
+                data-testid="btn-confirm-order"
+                disabled={isPending}
+              >
+                {isPending ? "Creating Link..." : "Confirm & Create Link"}
+              </Button>
             </div>
           </div>
         )}
 
         {step === 3 && createdOrder && (
-          <div className="space-y-6 pt-4 text-center">
-            <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-2">
-              <CheckCircle className="w-6 h-6 text-green-600" />
-            </div>
-            <p className="text-sm text-muted-foreground">Share this link with the buyer to receive payment:</p>
-            
-            <div className="flex items-center gap-2 p-3 bg-secondary border rounded-md text-left">
-              <Input readOnly value={`https://vouch.link/pay/${createdOrder.id}`} className="font-mono text-sm bg-transparent border-none focus-visible:ring-0 px-0 h-auto" />
-              <Button variant="ghost" size="sm" onClick={() => copyLink(`https://vouch.link/pay/${createdOrder.id}`)}><Copy className="w-4 h-4" /></Button>
+          <div className="space-y-6 py-4 px-6 text-center w-full">
+            <div className="bg-[#F5F5F7] p-6 border border-[#D9D9D9] rounded-[10px] flex flex-col items-start w-full">
+              <p className="text-sm text-muted-foreground">
+                Share this link with the buyer to receive payment:
+              </p>
+
+              <div className="flex items-center gap-2 bg-[#FEFEFE] border rounded-md text-left px-6 py-3.5 w-full">
+                <Input
+                  readOnly
+                  value={`https://vouch.link/pay/${createdOrder.checkout_token}`}
+                  className="font-mono text-sm bg-transparent border px-4 py-4 h-auto"
+                />
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="cursor-pointer p-4"
+                  onClick={() =>
+                    copyLink(
+                      `https://vouch.link/pay/${createdOrder.checkout_token}`,
+                    )
+                  }
+                >
+                  Copy
+                </Button>
+              </div>
             </div>
 
             <div className="flex gap-3 pt-2">
-              <Button variant="outline" className="flex-1 gap-2 border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10" onClick={() => window.open(`https://wa.me/?text=Pay for ${createdOrder.item_description} here: https://vouch.link/pay/${createdOrder.id}`)}>
+              <Button
+                variant="outline"
+                className="flex-1 gap-2 border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10"
+                onClick={() =>
+                  window.open(
+                    `https://wa.me/?text=Pay for ${createdOrder.item_description} here: https://vouch.link/pay/${createdOrder.id}`,
+                  )
+                }
+              >
                 <SiWhatsapp className="w-4 h-4" /> WhatsApp
               </Button>
-              <Button variant="outline" className="flex-1 gap-2 border-pink-500 text-pink-600 hover:bg-pink-50">
+              <Button
+                variant="outline"
+                className="flex-1 gap-2 border-pink-500 text-pink-600 hover:bg-pink-50"
+              >
                 <SiInstagram className="w-4 h-4" /> Instagram DM
               </Button>
             </div>
@@ -364,8 +497,8 @@ export function CreateOrderModal({ open, onOpenChange }: { open: boolean, onOpen
 
 //           {order.status === 'PAID_IN_ESCROW' && (
 //             <div className="space-y-3">
-//               <Button 
-//                 className="w-full" 
+//               <Button
+//                 className="w-full"
 //                 onClick={() => {
 //                   updateOrderStatus(order.id, 'DISPATCHED');
 //                   onOpenChange(false);
@@ -439,9 +572,17 @@ export function CreateOrderModal({ open, onOpenChange }: { open: boolean, onOpen
 //   );
 // }
 
-export function RiderLinkModal({ open, onOpenChange, orderId }: { open: boolean, onOpenChange: (o: boolean) => void, orderId: string }) {
+export function RiderLinkModal({
+  open,
+  onOpenChange,
+  orderId,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  orderId: string;
+}) {
   const { toast } = useToast();
-  
+
   const copyLink = () => {
     navigator.clipboard.writeText(`https://vouch.link/verify/${orderId}`);
     toast({ title: "Copied to clipboard" });
@@ -454,12 +595,23 @@ export function RiderLinkModal({ open, onOpenChange, orderId }: { open: boolean,
           <DialogTitle>Rider Verification Link</DialogTitle>
         </DialogHeader>
         <div className="py-4">
-          <p className="text-sm text-muted-foreground mb-4">Share this link with your dispatch rider to verify delivery with the buyer.</p>
+          <p className="text-sm text-muted-foreground mb-4">
+            Share this link with your dispatch rider to verify delivery with the
+            buyer.
+          </p>
           <div className="flex items-center gap-2 p-3 bg-secondary border rounded-md text-left mb-6">
-            <Input readOnly value={`https://vouch.link/verify/${orderId}`} className="font-mono text-sm bg-transparent border-none focus-visible:ring-0 px-0 h-auto" />
-            <Button variant="ghost" size="sm" onClick={copyLink}><Copy className="w-4 h-4" /></Button>
+            <Input
+              readOnly
+              value={`https://vouch.link/verify/${orderId}`}
+              className="font-mono text-sm bg-transparent border-none focus-visible:ring-0 px-0 h-auto"
+            />
+            <Button variant="ghost" size="sm" onClick={copyLink}>
+              <Copy className="w-4 h-4" />
+            </Button>
           </div>
-          <Button className="w-full" onClick={() => onOpenChange(false)}>Done</Button>
+          <Button className="w-full" onClick={() => onOpenChange(false)}>
+            Done
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

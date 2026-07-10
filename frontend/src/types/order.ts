@@ -2,6 +2,7 @@ export type OrderStatus = "PENDING" | "PAID_IN_ESCROW" | "DISPATCHED" | "SETTLED
 
 export interface CreateOrderDto {
   buyer_phone: string;
+  item_name: string;
   item_description: string;
   amount: number;
   additional_notes: string;
