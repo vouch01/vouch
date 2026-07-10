@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { authService } from "@/services/auth.service";
 // import { QUERY_KEYS } from "@/lib/query-keys";
 import { useRouter } from "next/navigation";

@@ -3,5 +3,12 @@ export const QUERY_KEYS = {
   
   ORDER: ["order"],
 
+  SINGLE_ORDER: (id: string) => ["orders", id],
+
   ORDERS: ["orders"],
+
+  ORDER_PIN: (checkoutToken: string) => [
+    "order-pin",
+    checkoutToken,
+  ],
 };
