@@ -33,7 +33,7 @@ export function AuthProvider({
   const {
   isPending,
   isSuccess,
-  isError,
+  // isError,
 } = useMe();
 
 const token =
