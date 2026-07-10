@@ -1,6 +1,9 @@
 import { eq, and, desc, inArray, isNull } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { vendors, orders, webhook_events, otp_tokens } from "../db/schema.js";
+import {Payment} from "../services/nomba.service.js"
+import { handleNombaError } from "../lib/nombaError.js";
+
 
 interface VendorInputs {
   business_name: string;
@@ -74,6 +77,21 @@ export const updateVendorDetails = async (
     return { status: 500, success: false, message: err.message };
   }
 };
+
+export const verifyBankDetails = async(bankCode:string, vendor_account_number:string) =>{
+  try{
+    const details = await Payment.lookupBankAccount(vendor_account_number, bankCode)
+    return {
+      status: 200,
+      success: true,
+      message: "Bank account verified successfully",
+      data: details
+    }
+  }catch (err: any){
+  console.error("Nomba error", err.message);
+    return handleNombaError(err)
+  }
+}
 
 export const deleteVendor = async (id: string) => {
   try {
