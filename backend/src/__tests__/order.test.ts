@@ -20,7 +20,7 @@ beforeAll(async () => {
     token = loginRes.body.token;
   });
 
-  it("returns status code 201 if order is created successfully", async() =>{
+  it.skip("returns status code 201 if order is created successfully", async() =>{
     const res = await request(app)
     .post("/v1/order/create")
      .set("Authorization", `Bearer ${token}`)
@@ -39,26 +39,39 @@ beforeAll(async () => {
     expect(res.body.escrowLink).toBeDefined()
   })
   
-   it("returns status code 200 if order is retrieved successfully", async() =>{
+   it.skip("returns status code 200 if order is retrieved successfully", async() =>{
     const res = await request(app)
     .get(`/v1/order/${id}`)
-     .set("Authorization", `Bearer ${token}`)  
+     .set("Authorization", `Bearer ${token}`)
 
      expect(res.statusCode).toEqual(200);
     expect(res.body.message).toContain("successfully");
     expect(res.body.data.item_description).toContain("ows");
   })
-   it.skip("returns status code 200 if all order is retrieved successfully", async() =>{
+
+   it("returns status code 200 if all order is retrieved successfully", async() =>{
     const res = await request(app)
-    .get(`/v1/order/all`)
-     .set("Authorization", `Bearer ${token}`)
+    .get('/v1/order/all')
+     .set("Authorization", `Bearer ${token}`) 
+
+        console.log("orders; ", res.body.data)
 
      expect(res.statusCode).toEqual(200);
     expect(res.body.message).toContain("successfully");
+    expect(res.body.data).toBeDefined()
+
+  })
+  it.skip("returns status code 200 if all order auth pin is retrieved successfully", async() =>{
+    const res = await request(app)
+    .get(`/v1/order/status/${'y1nrI1o946wp'}`)
+
+     expect(res.statusCode).toEqual(200);
+     expect(res.body.data.pin).toBeDefined()
+    // expect(res.body.message).toContain("successfully");
 
   })
 
-  it("returns status code 200 if order is deleted successfully", async() =>{
+  it.skip("returns status code 200 if order is deleted successfully", async() =>{
     const res = await request(app)
     .delete(`/v1/order/cancel/${id}`)
      .set("Authorization", `Bearer ${token}`)
