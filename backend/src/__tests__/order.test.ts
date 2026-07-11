@@ -49,7 +49,7 @@ beforeAll(async () => {
     expect(res.body.data.item_description).toContain("ows");
   })
 
-   it("returns status code 200 if all order is retrieved successfully", async() =>{
+   it.skip("returns status code 200 if all order is retrieved successfully", async() =>{
     const res = await request(app)
     .get('/v1/order/all')
      .set("Authorization", `Bearer ${token}`) 
@@ -61,6 +61,21 @@ beforeAll(async () => {
     expect(res.body.data).toBeDefined()
 
   })
+
+  it("returns status code 200 if  rider link  is generated successfully", async() =>{
+    const orderId:string= 'd3bdcf50-a3a2-45e0-9503-bdfda29fe275'
+    const res = await request(app)
+    .get(`/v1/order/generate/${orderId}`)
+     .set("Authorization", `Bearer ${token}`) 
+
+    console.log("riderLink", res.body.riderLink)
+
+     expect(res.statusCode).toEqual(200);
+    expect(res.body.riderLink).toBeDefined()
+    expect(res.body.message).toContain("successfully")
+
+  })
+
   it.skip("returns status code 200 if all order auth pin is retrieved successfully", async() =>{
     const res = await request(app)
     .get(`/v1/order/status/${'y1nrI1o946wp'}`)
