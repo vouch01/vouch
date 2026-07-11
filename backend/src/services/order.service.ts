@@ -201,13 +201,35 @@ export const generateRiderLink  = async  (orderId:string, vendor_id:string) =>{
       status: 'DISPATCHED'
     }).where(eq(orders.id, order.id))
     
-    const {id, delivery_address, status} =order
+   
     const riderLink = `${baseUrl}/verify/${ridertoken}`
-
-    const orderDetails = {id, delivery_address, status}
-    return {status:200, success:true, message:"Rider link generated successfully", riderLink, data:orderDetails}
+    return {status:200, success:true, message:"Rider link generated successfully", riderLink}
   }catch (err: any) {
     console.error("Error occurred while generating rider link:", err.message);
     return { status: 500, success: false, message: err.message };
   }
 }
+
+
+export const riderCheckout = async(riderToken:string) =>{
+  try{
+    const order = await db.query.orders.findFirst({
+      where: eq(orders.rider_token, riderToken)
+    })
+    if(!order){
+      return{status:404, success:false , message: "Order not found"}
+    }
+    const {id, delivery_address, status} =order 
+    const orderDetails = { id, delivery_address, status}
+    return{
+      status:200, 
+      success:true,
+      message:"Order retrieved successfully",
+      data:orderDetails
+    }
+  }catch (err: any) {
+    console.error("Error occurred in rider checkout", err.message);
+    return { status: 500, success: false, message: err.message };
+  }
+}
+// export const verifyDelivery = async (riderToken:string, )

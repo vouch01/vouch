@@ -1,4 +1,4 @@
-import {createOrder, getAllOrders, getOrderById, deleteOrderById, getOrderAuthPin, generateRiderLink} from "../services/order.service.js"
+import {createOrder, getAllOrders, getOrderById, deleteOrderById, getOrderAuthPin, generateRiderLink, riderCheckout} from "../services/order.service.js"
 
 export const CreateOrderController = async(req:any, res:any) =>{
     try{
@@ -66,6 +66,19 @@ export const GenerateRiderLinkController = async(req:any, res:any) => {
         return res.status(order.status).json(order)
     }catch(error){
         return res.status(500).json({status:500,success:false,message: "internal server error"})
+    }
+}
+
+export const RiderCheckoutController = async(req:any, res:any) =>{
+    try{
+        const riderToken = req.params.riderToken
+        const order = await riderCheckout(riderToken)
+        if(!order.success){
+            return res.status(order.status).json(order)
+        }
+        return res.status(order.status).json(order)
+    }catch(error){
+        return res.status(500).json({status:500,success:false,message: "Internal server error"})
     }
 }
  
