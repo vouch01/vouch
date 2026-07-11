@@ -23,7 +23,7 @@ const Hero = () => {
             transition={{ duration: 0.6, ease: "easeOut" }}
             className="max-w-2xl"
           >
-            <h1 className="text-4xl md:text-6xl lg:text-[64px] font-extrabold tracking-tight text-foreground leading-[1.1] mb-6">
+            <h1 className="text-4xl md:text-6xl lg:text-[60px] font-extrabold tracking-tight text-foreground leading-[1.1] mb-6">
               Secure every social commerce{" "}
               <span className="text-primary">transaction.</span>
             </h1>

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react-hooks/incompatible-library */
 "use client";
 
@@ -410,12 +409,9 @@ export function OrderDetailModal({
   onOpenChange: (o: boolean) => void;
 }) {
   const { data, isLoading } = useOrder(orderId ?? "");
+  const { toast } = useToast();
 
   const order = data?.data;
-
-  if (!order) return null;
-
-  const { toast } = useToast();
 
   const copyLink = (link: string) => {
     navigator.clipboard.writeText(link);
@@ -425,7 +421,14 @@ export function OrderDetailModal({
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "PENDING_PAYMENT":
-        return <Badge variant="secondary">Pending Payment</Badge>;
+        return (
+          <Badge
+            className="rounded-full bg-[#DDDDDE] border border-red font-normal"
+            variant="secondary"
+          >
+            Pending Payment
+          </Badge>
+        );
 
       case "PAID_IN_ESCROW":
         return (
@@ -465,22 +468,27 @@ export function OrderDetailModal({
 
   if (isLoading) return <Loading />;
 
+  if (!order) return null;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-125">
-        <DialogHeader className="flex flex-row items-center justify-between pb-2 border-b">
-          <DialogTitle className="flex items-center gap-3">
-            <span>Order {order.id}</span>
+      <DialogContent className="sm:max-w-125 p-0">
+        <DialogHeader className="flex flex-row items-start p-6 border-b">
+          <DialogTitle className="flex flex-col items-center gap-3">
+            <span className="flex flex-col item-start p-0">
+              Order <p className="uppercase">ord-{order.id.slice(0, 5)}</p>
+            </span>
             {getStatusBadge(order.status)}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="py-4 space-y-6">
+        <div className="px-6 space-y-6">
           {order.status === "PENDING_PAYMENT" && (
             <div className="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-md text-sm flex gap-2">
-              <AlertCircle className="w-5 h-5 shrink-0" />
-              <p>
-                Awaiting Payment — Send the payment link to the buyer. Payment
+              
+              <p className="flex flex-col gap-2 text-[#444444] text-[10px]">
+                <span className="text-[#C47E09] font-normal text-[12px]">Awaiting Payment</span>
+                Send the payment link to the buyer. Payment
                 must be received within 30 minutes.
               </p>
             </div>
@@ -500,42 +508,46 @@ export function OrderDetailModal({
             <div className="bg-green-50 border border-green-200 text-green-800 p-3 rounded-md text-sm flex gap-2">
               <CheckCircle className="w-5 h-5 shrink-0 text-green-600" />
               <p>
-                Payout Completed — ₦{order.amount_paid.toLocaleString()} transferred
-                to your GTBank account
+                Payout Completed — ₦{order.expected_amount.toLocaleString()}{" "}
+                transferred to your GTBank account
               </p>
             </div>
           )}
 
-          <div>
+          <div className="">
             <h4 className="font-semibold text-sm mb-3">Order Details</h4>
-            <div className="border rounded-md overflow-hidden text-sm">
-              <div className="flex justify-between p-3 border-b bg-slate-50/50">
-                <span className="text-muted-foreground">Item</span>
-                <span className="font-medium text-right">{order.item_name}</span>
+            <div className="border rounded-md overflow-hidden text-sm bg-[#F5F5F7] p-6">
+              <div className="flex justify-between py-3 border-b">
+                <span className="text-[#939394] text-[12px]">Item</span>
+                <span className="font-normal text-[#565656] text-right text-[12px]">
+                  {order.item_name}
+                </span>
               </div>
-              <div className="flex justify-between p-3 border-b bg-white">
-                <span className="text-muted-foreground">Amount</span>
-                <span className="font-medium text-right">
+              <div className="flex justify-between py-3 border-b">
+                <span className="text-[#939394] text-[12px]">Amount</span>
+                <span className="font-normal text-[#565656] text-right text-[12px]">
                   ₦{order.expected_amount.toLocaleString()}
                 </span>
               </div>
-              <div className="flex justify-between p-3 border-b bg-slate-50/50">
-                <span className="text-muted-foreground">Buyer Phone</span>
-                <span className="font-medium text-right">{order.buyer_phone ?? "Not provided"}</span>
+              <div className="flex justify-between py-3 border-b bg-slate-50/50">
+                <span className="text-[#939394] text-[12px]">Buyer Phone</span>
+                <span className="font-normal text-[#565656] text-right text-[12px]">
+                  {order.buyer_phone ?? "Not provided"}
+                </span>
               </div>
-              <div className="flex justify-between p-3 border-b bg-white">
-                <span className="text-muted-foreground">Delivery Address</span>
+              <div className="flex justify-between py-3 border-b">
+                <span className="text-[#939394] text-[12px]">Delivery Address</span>
                 <span
-                  className="font-medium text-right max-w-50 truncate"
+                  className="font-normal text-[#565656] text-right max-w-50 truncate"
                   // title={order.delivery_address}
                 >
                   {order.delivery_address}
                 </span>
               </div>
-              <div className="flex justify-between p-3 bg-slate-50/50">
-                <span className="text-muted-foreground">Date Created</span>
-                <span className="font-medium text-right">
-                  new Date(order.created_at).toLocaleString()
+              <div className="flex justify-between py-3 border-b">
+                <span className="text-[#939394] text-[12px]">Date Created</span>
+                <span className="font-normal text-[#565656] text-right text-[12px]">
+                  {new Date(order.created_at).toLocaleString()}
                 </span>
               </div>
             </div>
@@ -543,37 +555,47 @@ export function OrderDetailModal({
 
           {order.status === "PENDING_PAYMENT" && (
             <div>
-              <h4 className="font-semibold text-sm mb-3">
+              <h4 className="font-normal text-[16px] text-[#1F1F1F] mb-3">
                 Resend Payment Link
               </h4>
-              <div className="flex items-center gap-2 p-3 bg-secondary border rounded-md text-left mb-3">
+              <div className="flex items-center gap-2 bg-[#FEFEFE] border rounded-md text-left px-6 py-3.5 w-full">
                 <Input
                   readOnly
-                  value={`https://vouch.link/pay/${order.id}`}
-                  className="font-mono text-sm bg-transparent border-none focus-visible:ring-0 px-0 h-auto"
+                  value={`https://vouch.link/pay/${order.checkout_token}`}
+                  className="font-mono text-sm bg-transparent border px-4 py-4 h-auto"
                 />
                 <Button
-                  variant="ghost"
+                  variant="default"
                   size="sm"
-                  onClick={() => copyLink(`https://vouch.link/pay/${order.id}`)}
+                  className="cursor-pointer p-4"
+                  onClick={() =>
+                    copyLink(
+                      `https://vouch.link/pay/${order.checkout_token}`,
+                    )
+                  }
                 >
-                  <Copy className="w-4 h-4" />
+                  Copy
                 </Button>
               </div>
-              <div className="flex gap-3">
-                <Button
-                  variant="outline"
-                  className="flex-1 gap-2 border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10"
-                >
-                  <SiWhatsapp className="w-4 h-4" /> WhatsApp
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex-1 gap-2 border-pink-500 text-pink-600 hover:bg-pink-50"
-                >
-                  <SiInstagram className="w-4 h-4" /> Instagram DM
-                </Button>
-              </div>
+              <div className="flex gap-3 py-10 px-6 border-t border-[#DDDDDE}">
+              <Button
+                variant="outline"
+                className="flex-1 gap-2 text-[#25D366] hover:bg-[#25D366]/10 cursor-pointer"
+                onClick={() =>
+                  window.open(
+                    `https://wa.me/?text=Pay for ${order.item_description} here: https://vouch.link/pay/${order.id}`,
+                  )
+                }
+              >
+                <SiWhatsapp className="w-4 h-4" /> WhatsApp
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1 gap-2 text-pink-600 hover:bg-pink-50 cursor-pointer"
+              >
+                <SiInstagram className="w-4 h-4" /> Instagram DM
+              </Button>
+            </div>
             </div>
           )}
 

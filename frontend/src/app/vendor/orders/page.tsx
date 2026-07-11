@@ -58,33 +58,33 @@ export default function OrdersPage() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case "PENDING":
+      case "PENDING_PAYMENT":
         return (
-          <Badge variant="secondary" className="bg-gray-100 text-gray-700">
+          <Badge variant="secondary" className="bg-[#DDDDDE] rounded-full text-gray-700 font-normal px-2.5 py-1">
             Pending Payment
           </Badge>
         );
       case "PAID_IN_ESCROW":
         return (
-          <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">
+          <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 rounded-full font-normal">
             Ready to Ship
           </Badge>
         );
       case "DISPATCHED":
         return (
-          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">
+          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 rounded-full font-normal">
             Dispatched
           </Badge>
         );
       case "SETTLED":
         return (
-          <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+          <Badge className="bg-green-100 text-green-800 hover:bg-green-100 font-normal">
             Settled
           </Badge>
         );
       case "DISPUTED":
         return (
-          <Badge className="bg-pink-100 text-pink-800 hover:bg-pink-100">
+          <Badge className="bg-pink-100 text-pink-800 hover:bg-pink-100 rounded-full font-normal px-2.5 py-1">
             Disputed
           </Badge>
         );
@@ -199,8 +199,8 @@ export default function OrdersPage() {
                 <TableRow className="bg-[#F5F5F7] border-none py-4 px-6">
                   <TableHead>Order ID</TableHead>
                   <TableHead>Buyer Phone</TableHead>
-                  <TableHead>Item Description</TableHead>
-                  <TableHead>Amount (₦)</TableHead>
+                  <TableHead>Item Name</TableHead>
+                  <TableHead>Amount</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Date Created</TableHead>
                   <TableHead className="text-right">Action</TableHead>
@@ -226,8 +226,8 @@ export default function OrdersPage() {
                         setOrderModalOpen(true);
                       }}
                     >
-                      <TableCell className="font-mono text-primary font-medium">
-                        {order.id}
+                      <TableCell className="font-mono text-primary font-medium uppercase">
+                        ord-{order.id.slice(0, 5)}
                       </TableCell>
                       <TableCell className="font-mono text-sm">
                         {order.buyer_phone}
@@ -236,7 +236,7 @@ export default function OrdersPage() {
                         {order.item_name}
                       </TableCell>
                       <TableCell className="font-medium">
-                        {order.amount_paid.toLocaleString()}
+                        ₦{order.expected_amount.toLocaleString()}
                       </TableCell>
                       <TableCell>{getStatusBadge(order.status)}</TableCell>
                       <TableCell className="text-muted-foreground text-sm">
