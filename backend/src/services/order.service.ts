@@ -5,6 +5,7 @@ import { generateUniqueToken } from "../utils/uuid.js";
 import crypto from "crypto";
 import { nairaToKobo } from "../utils/nomba.js";
 import {connection} from '../lib/redis.js'
+import bcrypt from 'bcrypt'
 
 interface OrderInputs {
   vendor_id: string;
@@ -232,4 +233,31 @@ export const riderCheckout = async(riderToken:string) =>{
     return { status: 500, success: false, message: err.message };
   }
 }
-// export const verifyDelivery = async (riderToken:string, )
+
+
+export const verifyOrderDelivery = async (riderToken:string, pin:string) => {
+  try{
+    const order = await db.query.orders.findFirst({
+      where:and(eq(orders.rider_token, riderToken))
+    })
+    if(!order){
+      return{status:404, success:false, message:"Order not found"}
+    }
+    const isPinValid = await bcrypt.compare(
+      pin,
+      order.delivery_pin_hash!
+    )
+    if(!isPinValid){
+      return {status:404, success:false, message: "Invalid delivery pin"}
+    }
+    await db.update(orders).set({
+      pin_submitted_at: new Date()
+    }).where(eq(orders.id, order.id))
+
+    return {status:200,success:true, message: "Delivery Verified Successfully"}
+    //setllement to worker 
+  }catch (err: any) {
+    console.error("Error occurred in  delivery verification", err.message);
+    return { status: 500, success: false, message: err.message };
+  }
+}
