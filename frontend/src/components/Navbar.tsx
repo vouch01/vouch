@@ -116,12 +116,16 @@ const Navbar = () => {
             FAQ
           </a>
           <div className="flex flex-col gap-2 mt-4">
-            <Button variant="outline" className="w-full justify-center">
-              Login
-            </Button>
-            <Button className="w-full justify-center bg-primary text-white">
-              Get Started
-            </Button>
+            <Link href={"/login"}>
+              <Button variant="outline" className="w-full justify-center">
+                Login
+              </Button>
+            </Link>
+            <Link href={"/signup"}>
+              <Button className="w-full justify-center bg-primary text-white">
+                Get Started
+              </Button>
+            </Link>
           </div>
         </div>
       )}
