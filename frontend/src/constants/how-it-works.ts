@@ -1,17 +1,17 @@
 export const items = [
   {
     title: "Create Order",
-    desc: "Vendor or buyer creates an escrow link detailing the item and price.",
+    desc: "Vendor creates an escrow order and shares a secure checkout link with the buyer",
     imgUrl: "/bgs/bg-2.png",
   },
   {
     title: "Buyer Pays Securely",
-    desc: "Funds are deposited into Vouch's secure vault. The vendor is notified to ship.",
+    desc: "Buyer makes payment which is held safely in escrow while the order is prepared and shipped.",
     imgUrl: "/bgs/bg-3.png",
   },
   {
     title: "Delivery Verified",
-    desc: "Buyer confirms receipt. Vouch instantly releases funds to the vendor.",
+    desc: "Buyer confirms delivery with a unique PIN. Funds are release automatically to the vendor.",
     imgUrl: "/bgs/bg-1.png",
   },
 ];

@@ -42,7 +42,7 @@ const HowItWorks = () => {
               <h3 className="text-xl font-medium mb-3 text-[#FEFEFE]">
                 {item.title}
               </h3>
-              <p className="text-[#FEFEFE] text-[16px]">{item.desc}</p>
+              <p className="text-[#FEFEFE] text-[14px]">{item.desc}</p>
               <Image
                 src={item.imgUrl}
                 alt={item.title}

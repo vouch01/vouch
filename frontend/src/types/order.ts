@@ -1,4 +1,4 @@
-export type OrderStatus = "PENDING" | "PAID_IN_ESCROW" | "DISPATCHED" | "SETTLED" | "DISPUTED";
+export type OrderStatus = "PENDING_PAYMENT" | "PAID_IN_ESCROW" | "DISPATCHED" | "SETTLED" | "DISPUTED";
 
 export interface CreateOrderDto {
   buyer_phone: string;
