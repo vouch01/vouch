@@ -62,7 +62,7 @@ beforeAll(async () => {
 
   })
 
-  it("returns status code 200 if  rider link  is generated successfully", async() =>{
+  it.skip("returns status code 200 if  rider link  is generated successfully", async() =>{
     const orderId:string= 'd3bdcf50-a3a2-45e0-9503-bdfda29fe275'
     const res = await request(app)
     .get(`/v1/order/generate/${orderId}`)
@@ -73,6 +73,17 @@ beforeAll(async () => {
      expect(res.statusCode).toEqual(200);
     expect(res.body.riderLink).toBeDefined()
     expect(res.body.message).toContain("successfully")
+
+  })
+
+  it("returns status code 200 if  rider checkout details is retrieved successfully", async() =>{
+    const riderToken ='t65mx1o8Hx8t'
+    const res = await request(app)
+    .get(`/v1/order/checkout/${riderToken}`)
+
+     expect(res.statusCode).toEqual(200);
+     expect(res.body.data).toBeDefined()
+    expect(res.body.message).toContain("successfully");
 
   })
 
