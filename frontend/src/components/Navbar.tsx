@@ -32,7 +32,9 @@ const Navbar = () => {
     setIsMobileMenuOpen((prev) => !prev);
   };
   return (
-    <header className={`fixed left-1/2 -translate-x-1/2 z-50 flex justify-center items-center transition-all duration-300 ${isSticky ? "bg-white top-0 w-full px-6 md:px-12 py-2" : "top-10 w-[90%] md:w-2/3 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 shadow-[0px_16px_24px_2px_#00000024] rounded-2xl py-1" }`}>
+    <header
+      className={`fixed left-1/2 -translate-x-1/2 z-50 flex justify-center items-center transition-all duration-300 ${isSticky ? "bg-white top-0 w-full px-6 md:px-12 py-2" : "top-10 w-[90%] md:w-2/3 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 shadow-[0px_16px_24px_2px_#00000024] rounded-2xl py-1"}`}
+    >
       <div className="w-full mx-auto px-4 h-16 flex items-center justify-between">
         <Link
           href="/"
@@ -59,12 +61,19 @@ const Navbar = () => {
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
-          <Button onClick={() => router.push("/login")} variant="ghost" className="text-sm font-medium text-primary cursor-pointer">
-            Login
-          </Button>
-          <Button onClick={() => router.push("/signup")} className="bg-primary hover:bg-primary/90 text-white font-medium shadow-sm cursor-pointer">
-            Get Started
-          </Button>
+          <Link href={"/login"}>
+            <Button
+              variant="ghost"
+              className="text-sm font-medium text-primary cursor-pointer"
+            >
+              Login
+            </Button>
+          </Link>
+          <Link href={"/signup"}>
+            <Button className="bg-primary hover:bg-primary/90 text-white font-medium shadow-sm cursor-pointer">
+              Get Started
+            </Button>
+          </Link>
         </div>
 
         <button

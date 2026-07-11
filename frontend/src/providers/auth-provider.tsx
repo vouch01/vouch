@@ -1,16 +1,10 @@
-
-
 "use client";
 
 import { useMe } from "@/hooks/use-me";
 import { QUERY_KEYS } from "@/lib/query-keys";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  createContext,
-  useContext,
-  type ReactNode
-} from "react";
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -30,41 +24,54 @@ export function AuthProvider({
   const router = useRouter();
   const queryClient = useQueryClient();
 
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    setToken(localStorage.getItem("accessToken"));
+  }, []);
+
+  const hasToken = !!token;
+
   const {
   isPending,
   isSuccess,
-  // isError,
 } = useMe();
-
-const token =
-  typeof window !== "undefined"
-    ? localStorage.getItem("accessToken")
-    : null;
-
-const hasToken = !!token;
 
 const loading = hasToken && isPending;
 
 const isAuthenticated = hasToken && isSuccess;
 
 
-  const login = async (token: string) => {
-  localStorage.setItem("accessToken", token);
+//   const login = async (token: string) => {
+//   localStorage.setItem("accessToken", token);
 
-  await queryClient.invalidateQueries({
-    queryKey: QUERY_KEYS.USER,
-  });
-};
+//   await queryClient.invalidateQueries({
+//     queryKey: QUERY_KEYS.USER,
+//   });
+// };
 
-  const logout = () => {
+const login = async (newToken: string) => {
+    localStorage.setItem("accessToken", newToken);
+    setToken(newToken); // <-- this is the missing piece: tell React something changed
+    await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.USER });
+  };
+
+//   const logout = () => {
+//     localStorage.removeItem("accessToken");
+
+//     queryClient.removeQueries({
+//         queryKey: QUERY_KEYS.USER,
+//     });
+
+//     router.replace("/login");
+// };
+
+const logout = () => {
     localStorage.removeItem("accessToken");
-
-    queryClient.removeQueries({
-        queryKey: QUERY_KEYS.USER,
-    });
-
+    setToken(null);
+    queryClient.removeQueries({ queryKey: QUERY_KEYS.USER });
     router.replace("/login");
-};
+  };
 
   return (
     <AuthContext.Provider
