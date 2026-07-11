@@ -13,6 +13,9 @@ interface VendorInputs {
   password: string;
 }
 
+const findVendorByEmail = (email: string) => 
+  db.query.vendors.findFirst({ where: eq(vendors.email, email) })
+
 export const createVendor = async (vendorData: VendorInputs) => {
   try {
     const {
@@ -20,11 +23,13 @@ export const createVendor = async (vendorData: VendorInputs) => {
       email,
       password,
     } = vendorData;
+    
     const existingVendor = await db
-      .select()
-      .from(vendors)
-      .where(and(eq(vendors.email, email),isNull(vendors.deleted_at)))
-    if (existingVendor.length > 0) {
+      .query.vendors.findFirst({
+        where: (eq(vendors.email, email))
+      })
+
+    if (existingVendor) {
       return { status: 409, success: false, message: "user already Exists" };
     }
 
@@ -44,7 +49,7 @@ export const createVendor = async (vendorData: VendorInputs) => {
     return {
       status: 201,
       success: true,
-      message: ":vendor account created successfully",
+      message: "vendor account created successfully",
       token,
       data: vendor,
     };
@@ -54,25 +59,24 @@ export const createVendor = async (vendorData: VendorInputs) => {
   }
 };
 
+
 export const loginVendor = async (email: string, password: string) => {
   try {
-    const existingVendor = await db
-      .select()
-      .from(vendors)
-      .where(eq(vendors.email, email));
-    if (!existingVendor.length) {
+    const existingVendor = await findVendorByEmail(email)
+
+    if (!existingVendor) {
       return { status: 404, success: false, message: "Account doesnt exist" };
     }
     const isPasswordValid = await bcrypt.compare(
       password,
-      existingVendor[0]!.password_hash,
+      existingVendor.password_hash,
     );
     if (!isPasswordValid) {
       return { status: 401, success: false, message: "invalid credentials" };
     }
-    const { password_hash, ...userData } = existingVendor[0]!;
+    const { password_hash, ...userData } = existingVendor;
 
-    const token = accessToken(existingVendor[0]!.id);
+    const token = accessToken(existingVendor.id);
     return {
       status: 200,
       success: true,
@@ -89,16 +93,13 @@ export const loginVendor = async (email: string, password: string) => {
 
 export const generateOtp = async (email: string) => {
   try {
-    const existingVendor = await db
-      .select()
-      .from(vendors)
-      .where(eq(vendors.email, email));
+    const existingVendor = await findVendorByEmail(email)
 
-  if (!existingVendor.length) {
+  if (!existingVendor) {
       return { status: 404, success: false, message: "Account doesnt exist" };
     }
     const otp = await generateUniqueOtp(6);
-    const name = existingVendor[0]!.business_name
+    const name = existingVendor.business_name
     
     await emailQueue.add('password-reset', {
       name,
@@ -112,12 +113,12 @@ export const generateOtp = async (email: string) => {
     //invalidates old token 
     await db.update(otp_tokens)
   .set({ status: 'USED' })
-  .where(eq(otp_tokens.vendor_id, existingVendor[0]!.id))
+  .where(eq(otp_tokens.vendor_id, existingVendor.id))
 
       await db
       .insert(otp_tokens)
       .values({
-        vendor_id: existingVendor[0]!.id,
+        vendor_id: existingVendor.id,
         otp_token: otpHash,
         expires_at: new Date(Date.now() + 5 * 60 * 1000), // 5 minutes from now
       })
@@ -141,14 +142,11 @@ export const generateOtp = async (email: string) => {
 
 export const verifyOtp = async (otp: string, email: string) => {
   try {
-    const vendor = await db
-      .select()
-      .from(vendors)
-      .where(eq(vendors.email, email));
-    if (!vendor.length) {
+    const existingVendor = await findVendorByEmail(email)
+    if (!existingVendor) {
       return { status: 404, success: false, message: "Vendor not found" };
     }
-    const vendorId = vendor[0]!.id;
+    const vendorId = existingVendor.id;
 
     const existingOtp = await db
       .select()
@@ -200,11 +198,11 @@ export const verifyOtp = async (otp: string, email: string) => {
 
 export const passwordReset = async (password: string, email: string) => {
   try {
-    const vendor = await db.select().from(vendors).where(eq(vendors.email, email))
+    const existingVendor = await findVendorByEmail(email)
     const verifiedOtp = await db.select().from(otp_tokens)
   .where(
     and(
-      eq(otp_tokens.vendor_id, vendor[0]!.id),
+      eq(otp_tokens.vendor_id, existingVendor!.id),
       eq(otp_tokens.verified, true)
     )
   )
