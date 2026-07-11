@@ -38,7 +38,7 @@ export const collectOrderPayment = async (checkout_token: string) => {
     } = order;
     const nombaTimeFormat = formatNombaDate(expires_at);
 
-    const formattedAmount = koboToNombaFormat(expected_amount);
+    const formattedAmount = Math.round(expected_amount/100)
 
     const { bankAccountName, bankAccountNumber, expiryDate } =
       await Payment.createVirtualAccountForSubAccount(
@@ -72,7 +72,6 @@ export const collectOrderPayment = async (checkout_token: string) => {
 export const processOrderPayment = async (payload: any) => {
   try {
     const {event_type, data} =payload
-    console.log("Webhook-data-from-processOrderService", payload)
 
     const { transaction} = data
     const { transactionAmount, transactionId } = transaction;
@@ -107,18 +106,16 @@ export const processOrderPayment = async (payload: any) => {
             payload: JSON.stringify(payload)
         })
 
-        const amount = koboToNombaFormat(order.expected_amount)
-        console.log("order-amount", amount)
+        const amountPaid = nairaToKobo(transactionAmount)
+        console.log("order-amount", amountPaid)
 
-        if(transactionAmount === amount){
+        if(amountPaid === order.expected_amount){
             const pin =await generateUniqueOtp(4)
             const pinHash = await bcrypt.hash(pin, 10)
 
-            const safeAmount = nairaToKobo(amount)
-
             await db.update(orders).set({
                 status: 'PAID_IN_ESCROW',
-                amount_paid: safeAmount,
+                amount_paid: amountPaid,
                 delivery_pin_hash: pinHash 
             }).where (eq(orders.id, order.id))
 
