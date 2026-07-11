@@ -9,8 +9,5 @@ router.get('/all', authenticate, GetAllOrderController)
 router.get('/:id', authenticate, GetOrderByIdController)
 router.delete('/cancel/:id', authenticate,DeleteOrderById )
 router.get('/status/:checkoutToken',GetOrderAuthPinController)
-router.get('/generate/:orderId', authenticate, GenerateRiderLinkController)
-router.get('/verify/:riderToken', RiderCheckoutController)
-router.post('/verify/:riderToken', verifyOrderDeliveryController)
 
 export default router;

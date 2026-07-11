@@ -62,10 +62,20 @@ beforeAll(async () => {
 
   })
 
+   it.skip("returns status code 200 if  order auth pin is retrieved successfully", async() =>{
+    const res = await request(app)
+    .get(`/v1/order/status/${'y1nrI1o946wp'}`)
+
+     expect(res.statusCode).toEqual(200);
+     expect(res.body.data.pin).toBeDefined()
+    // expect(res.body.message).toContain("successfully");
+
+  })
+
   it.skip("returns status code 200 if  rider link  is generated successfully", async() =>{
     const orderId:string= 'd3bdcf50-a3a2-45e0-9503-bdfda29fe275'
     const res = await request(app)
-    .get(`/v1/order/generate/${orderId}`)
+    .get(`/v1/rider/generate/${orderId}`)
      .set("Authorization", `Bearer ${token}`) 
 
     console.log("riderLink", res.body.riderLink)
@@ -79,27 +89,17 @@ beforeAll(async () => {
   it.skip("returns status code 200 if  rider checkout details is retrieved successfully", async() =>{
     const riderToken ='t65mx1o8Hx8t'
     const res = await request(app)
-    .get(`/v1/order/checkout/${riderToken}`)
+    .get(`/v1/rider/verify/${riderToken}`)
 
      expect(res.statusCode).toEqual(200);
      expect(res.body.data).toBeDefined()
     expect(res.body.message).toContain("successfully");
   })
 
-  it.skip("returns status code 200 if all order auth pin is retrieved successfully", async() =>{
-    const res = await request(app)
-    .get(`/v1/order/status/${'y1nrI1o946wp'}`)
-
-     expect(res.statusCode).toEqual(200);
-     expect(res.body.data.pin).toBeDefined()
-    // expect(res.body.message).toContain("successfully");
-
-  })
-
     it("returns status code 200 if order delivery is verfied successfully", async() =>{
     const riderToken ='t65mx1o8Hx8t'
     const res = await request(app)
-    .post(`/v1/order/verify/${riderToken}`)
+    .post(`/v1/rider/verify/${riderToken}`)
     .send({
       pin: "4524"
     })
