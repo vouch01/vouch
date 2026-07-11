@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { ShieldCheck, ArrowRight, CheckCircle2, Zap, Lock } from "lucide-react";
 import { Button } from "./ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 const Hero = () => {
   return (
@@ -32,6 +33,8 @@ const Hero = () => {
               is verified. Safe for buyers. Reliable for vendors.
             </p>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-12">
+              
+              <Link href={"/signup"}>
               <Button
                 size="lg"
                 className="h-14 px-8 text-base bg-[#5B4CF0] hover:bg-primary/90 text-white rounded-xl shadow-lg shadow-primary/25 group cursor-pointer"
@@ -39,6 +42,7 @@ const Hero = () => {
                 Create Escrow Order
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
+              </Link>
             </div>
           </motion.div>
         </div>
