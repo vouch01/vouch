@@ -59,33 +59,33 @@ export default function VendorDashboard() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case "PENDING":
+      case "PENDING_PAYMENT":
         return (
-          <Badge variant="secondary" className="bg-gray-100 text-gray-700">
+          <Badge variant="secondary" className="bg-gray-100 text-gray-700 rounded-full">
             Pending Payment
           </Badge>
         );
       case "PAID_IN_ESCROW":
         return (
-          <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">
+          <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 rounded-full">
             Ready to Ship
           </Badge>
         );
       case "DISPATCHED":
         return (
-          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">
+          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 rounded-full">
             Dispatched
           </Badge>
         );
       case "SETTLED":
         return (
-          <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+          <Badge className="bg-green-100 text-green-800 hover:bg-green-100 rounded-full">
             Settled
           </Badge>
         );
       case "DISPUTED":
         return (
-          <Badge className="bg-pink-100 text-pink-800 hover:bg-pink-100">
+          <Badge className="bg-pink-100 text-pink-800 hover:bg-pink-100 rounded-full">
             Disputed
           </Badge>
         );
@@ -125,7 +125,7 @@ export default function VendorDashboard() {
             <p className="text-sm font-medium text-muted-foreground mb-1">
               Total Orders
             </p>
-            <p className="text-3xl font-bold">24</p>
+            <p className="text-3xl font-bold">{orders.length}</p>
             <p className="text-xs text-muted-foreground mt-1">This month</p>
           </div>
           <div className="bg-white border p-5 rounded-lg">

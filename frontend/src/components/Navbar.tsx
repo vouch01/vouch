@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 const navigation = [
   { name: "How it Works", href: "#how-it-works" },
@@ -15,7 +14,6 @@ const navigation = [
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
