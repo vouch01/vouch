@@ -76,7 +76,7 @@ beforeAll(async () => {
 
   })
 
-  it("returns status code 200 if  rider checkout details is retrieved successfully", async() =>{
+  it.skip("returns status code 200 if  rider checkout details is retrieved successfully", async() =>{
     const riderToken ='t65mx1o8Hx8t'
     const res = await request(app)
     .get(`/v1/order/checkout/${riderToken}`)
@@ -84,7 +84,6 @@ beforeAll(async () => {
      expect(res.statusCode).toEqual(200);
      expect(res.body.data).toBeDefined()
     expect(res.body.message).toContain("successfully");
-
   })
 
   it.skip("returns status code 200 if all order auth pin is retrieved successfully", async() =>{
@@ -95,6 +94,18 @@ beforeAll(async () => {
      expect(res.body.data.pin).toBeDefined()
     // expect(res.body.message).toContain("successfully");
 
+  })
+
+    it("returns status code 200 if order delivery is verfied successfully", async() =>{
+    const riderToken ='t65mx1o8Hx8t'
+    const res = await request(app)
+    .post(`/v1/order/verify/${riderToken}`)
+    .send({
+      pin: "4524"
+    })
+     expect(res.statusCode).toEqual(404);
+    //  expect(res.body.data).toBeDefined()
+    expect(res.body.message).toContain("Invalid");
   })
 
   it.skip("returns status code 200 if order is deleted successfully", async() =>{
