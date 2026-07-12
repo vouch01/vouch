@@ -170,6 +170,10 @@ export const getOrderAuthPin  =  async(checkoutToken:string) =>{
         await connection.del(`pin:${checkoutToken}`)  
     }
 
+    if(pin === null){
+      return {status:404, success:false, message: "Pin not found"}
+    }
+    
     return{
         status: 200,
       success: true,

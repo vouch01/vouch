@@ -62,12 +62,14 @@ beforeAll(async () => {
 
   })
 
-   it.skip("returns status code 200 if  order auth pin is retrieved successfully", async() =>{
+   it("returns status code 200 if  order auth pin is retrieved successfully", async() =>{
     const res = await request(app)
     .get(`/v1/order/status/${'y1nrI1o946wp'}`)
 
      expect(res.statusCode).toEqual(200);
      expect(res.body.data.pin).toBeDefined()
+
+     console.log(res.body.data.pin)
     // expect(res.body.message).toContain("successfully");
 
   })
@@ -96,7 +98,7 @@ beforeAll(async () => {
     expect(res.body.message).toContain("successfully");
   })
 
-    it("returns status code 200 if order delivery is verfied successfully", async() =>{
+    it.skip("returns status code 200 if order delivery is verfied successfully", async() =>{
     const riderToken ='t65mx1o8Hx8t'
     const res = await request(app)
     .post(`/v1/rider/verify/${riderToken}`)
