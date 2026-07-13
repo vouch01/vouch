@@ -3,7 +3,7 @@ import {
   pgEnum,
 } from "drizzle-orm/pg-core";
 import * as t from "drizzle-orm/pg-core";
-import { timestamps } from "./columns.helpers";
+import { timestamps } from "./columns.helpers.js";
 
 // export const rolesEnum = pgEnum("roles", ["VENDOR", "BUYER", "RIDER"]);
 export const otpTokenStatusEnum =pgEnum("otp_token_status", [
