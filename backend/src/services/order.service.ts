@@ -6,6 +6,7 @@ import crypto from "crypto";
 import { nairaToKobo } from "../utils/nomba.js";
 import {connection} from '../lib/redis.js'
 import bcrypt from 'bcrypt'
+import {paymentQueue} from "../lib/payment.queue.js"
 
 interface OrderInputs {
   vendor_id: string;
@@ -173,7 +174,7 @@ export const getOrderAuthPin  =  async(checkoutToken:string) =>{
     if(pin === null){
       return {status:404, success:false, message: "Pin not found"}
     }
-    
+
     return{
         status: 200,
       success: true,
@@ -257,9 +258,27 @@ export const verifyOrderDelivery = async (riderToken:string, pin:string) => {
     await db.update(orders).set({
       pin_submitted_at: new Date()
     }).where(eq(orders.id, order.id))
+    
 
+    const vendor = await db.query.vendors.findFirst({
+      where: eq(vendors.id, order.vendor_id)
+    })
+
+     //setllement to worker 
+    const {bank_account_name, bank_account_number, bank_code} = vendor!
+    const {amount_paid, item_name}  =order
+
+    const amount  = Math.round(amount_paid /100)
+    await paymentQueue.add('settlement',{
+      bank_account_name,
+      bank_account_number,
+      bank_code,
+      item_name,
+      amount
+  })
+  
     return {status:200,success:true, message: "Delivery Verified Successfully"}
-    //setllement to worker 
+   
   }catch (err: any) {
     console.error("Error occurred in  delivery verification", err.message);
     return { status: 500, success: false, message: err.message };
