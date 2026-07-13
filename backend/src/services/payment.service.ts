@@ -110,6 +110,7 @@ export const processOrderPayment = async (payload: any) => {
 
         if(amountPaid === order.expected_amount){
             const pin = generateUniqueOtp(4)
+            console.log('delivery-pin', pin)
             const pinHash = await bcrypt.hash(pin, 10)
 
             await db.update(orders).set({
