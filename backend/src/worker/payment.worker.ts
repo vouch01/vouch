@@ -2,10 +2,10 @@ console.log('Payment  worker file loaded')
 
 import {Worker } from 'bullmq'
 import { connection}  from  "../lib/redis.js" 
-import {processOrderPayment, settlePayment} from "../services/payment.service.js"
+import {processOrderPayment, settlePayment, settleWebhookConfirmation} from "../services/payment.service.js"
 
 const paymentWorker  = new Worker ('payment', async (job) => {
-  const {bank_account_name,
+  const {order_id,bank_account_name,
       bank_account_number,
       bank_code,
       item_name,
@@ -13,10 +13,10 @@ const paymentWorker  = new Worker ('payment', async (job) => {
 
     switch(job.name){
       case'payout_confirmation':
-      // await settlePayment()
+      await settleWebhookConfirmation(job.data)
       break;
         case 'settlement':
-          await settlePayment(bank_account_name,
+          await settlePayment(order_id,bank_account_name,
       bank_account_number,
       bank_code,
       item_name,
