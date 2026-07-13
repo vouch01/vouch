@@ -10,11 +10,11 @@ router.post("/nomba", verifySignature, async (req: any, res: any) => {
   const payload = req.body;
 
   switch (payload.event_type) {
-    case "payout_success":
+    case "payment_success":
       await paymentQueue.add("process-payment", payload);
       console.log("payment-processing job queued");
       break;
-    case "payment_success":
+    case "payout_success":
       await paymentQueue.add("payout_confirmation", payload);
       console.log("payment-confirmation job queued");
       break;
