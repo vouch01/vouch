@@ -269,14 +269,16 @@ export const verifyOrderDelivery = async (riderToken:string, pin:string) => {
     const {amount_paid, item_name}  =order
 
     const amount  = Math.round(amount_paid /100)
+    const order_id = order.id
     await paymentQueue.add('settlement',{
+      order_id,
       bank_account_name,
       bank_account_number,
       bank_code,
       item_name,
       amount
   })
-  
+
     return {status:200,success:true, message: "Delivery Verified Successfully"}
    
   }catch (err: any) {
