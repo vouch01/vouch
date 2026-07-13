@@ -16,6 +16,7 @@ router.post("/nomba", verifySignature, async (req: any, res: any) => {
       break;
     case "payment_success":
       await paymentQueue.add("payout_confirmation", payload);
+      console.log("payment-confirmation job queued");
       break;
     default:
       console.warn("Unhandled webhook event type:", payload.event_type);
