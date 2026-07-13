@@ -119,7 +119,7 @@ export const processOrderPayment = async (payload: any) => {
                 delivery_pin_hash: pinHash 
             }).where (eq(orders.id, order.id))
 
-            await connection.set(`pin:${order.checkout_token}`, pin, 'EX', 300)
+            await connection.set(`pin:${order.checkout_token}`, pin, 'EX', 600)
         }
 
         return {status:200, success:false, message: 'Payment processed successfully'}
