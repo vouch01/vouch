@@ -3,7 +3,7 @@ import {
   pgEnum,
 } from "drizzle-orm/pg-core";
 import * as t from "drizzle-orm/pg-core";
-import { timestamps } from "./columns.helpers.js";
+import { timestamps } from "./columns.helpers";
 
 // export const rolesEnum = pgEnum("roles", ["VENDOR", "BUYER", "RIDER"]);
 export const otpTokenStatusEnum =pgEnum("otp_token_status", [
@@ -48,6 +48,8 @@ export const orders = pgTable("orders", {
   virtual_account_number: t.text("virtual_account_number"),
   virtual_account_ref: t.text("virtual_account_ref").notNull().unique(),
   virtual_account_holder_id: t.text("virtual_account_holder_id"),
+  fee: t.integer("fee"),
+  transaction_ref: t.varchar("transaction_ref").unique(),
   payout_amount: t.integer("payout_amount"),
   expires_at: t.timestamp("expires_at", { withTimezone: true }).notNull(),
   delivery_pin_hash: t.text("delivery_pin_hash"),
