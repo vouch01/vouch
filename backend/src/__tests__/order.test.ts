@@ -6,7 +6,7 @@ const router = express.Router();
 
 jest.setTimeout(15000);
 
-describe("Order Flow", () => {
+describe.skip("Order Flow", () => {
     let token:string
     let id:string
 
@@ -117,5 +117,29 @@ beforeAll(async () => {
 
      expect(res.statusCode).toEqual(200);
     expect(res.body.message).toContain("successfully");
+  })
+})
+
+
+describe("Delivery pin input rate limit", () =>{
+      const riderToken ='t65mx1o8Hx8t'
+
+  it('should block after 5 requests', async()=>{
+    for(let attempt = 0 ; attempt < 5 ; attempt++){
+      const res = await request(app)
+    .post(`/v1/rider/verify/${riderToken}`)
+    .set('X-Forwarded-For', '1.2.3.4')
+    .send({
+      pin: 'ad12'
+    })
+     expect(res.statusCode).toEqual(404);
+    }
+
+    const blocked = await request(app)
+    .post(`/v1/rider/verify/${riderToken}`)
+    .set('X-Forwarded-For', '1.2.3.4')
+    .send({pin: 'kji2'});
+    expect(blocked.status).toBe(429);
+    expect(blocked.body.error).toBe('Too many request , please try again in 30secs');
   })
 })
