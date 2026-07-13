@@ -63,15 +63,6 @@
 - Neon for postgreSQL hosting
 - Resend for efficient Email delivery 
 
-## NOMBA'S API
-
-| NOMBA'S API |        USE_CASE | API_REFERENCE  | 
-| :--------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| Create virtual account for a sub account | Vouch uses virtual account to receive payment from the buyer into the sub account which acts the escrow | https://developer.nomba.com/nomba-api-reference/virtual-accounts/create-virtual-account-for-sub-account |
-| Perform bank account transfer from the sub account |  This facilates the automated funds release from the escrow to vendor after delivery verification                                                                                        |     https://developer.nomba.com/nomba-api-reference/transfers/perform-bank-account-transfer-from-the-sub-account                                                                                            | 
-|Fetch bank codes and names |  Retrieve all supported Nigerian banks with their codes and names for vendor bank account transfer.                                                                                      |     https://developer.nomba.com/nomba-api-reference/transfers/fetch-bank-codes-and-names                                                                                            | 
-| Transaction requery for sub-accts |  Confirm transaction status requery before database reconcilation                                                      |  https://api.nomba.com/v1/transactions/accounts/{subAccountId}/single                                                                                            | 
-
 ## ENVIRONMENT VARIABLES
 
 Visit .env.example

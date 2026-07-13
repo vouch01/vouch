@@ -34,6 +34,17 @@ Vouch is structured as a high-performance monorepo utilizing a state-driven ledg
 - Hard Cap at ₦2,000 to incentivize high-ticket social commerce transactions.
 
 ## Tech Stack & Ecosystem Integration
+
+
+## NOMBA'S API
+
+| NOMBA'S API |        USE_CASE | API_REFERENCE  | 
+| :--------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Create virtual account for a sub account | Vouch uses virtual account to receive payment from the buyer into the sub account which acts the escrow | https://developer.nomba.com/nomba-api-reference/virtual-accounts/create-virtual-account-for-sub-account |
+| Perform bank account transfer from the sub account |  This facilates the automated funds release from the escrow to vendor after delivery verification                                                                                        |     https://developer.nomba.com/nomba-api-reference/transfers/perform-bank-account-transfer-from-the-sub-account                                                                                            | 
+|Fetch bank codes and names |  Retrieve all supported Nigerian banks with their codes and names for vendor bank account transfer.                                                                                      |     https://developer.nomba.com/nomba-api-reference/transfers/fetch-bank-codes-and-names                                                                                            | 
+| Transaction requery for sub-accts |  Confirm transaction status requery before database reconcilation                                                      |  https://api.nomba.com/v1/transactions/accounts/{subAccountId}/single                                                                                            | 
+
 ### Core infrastructure
 - Fintech APIs: Nomba API Core (Virtual Accounts for inflow collection, Bank Lookup for verification, Transfers API for payout automation).
 - Database ORM: Drizzle ORM paired with PostgreSQL for schema-enforced, type-safe state transitions
