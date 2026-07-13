@@ -7,6 +7,8 @@ import { formatNombaDate, koboToNombaFormat, nairaToKobo } from "../utils/nomba.
 import { handleNombaError } from "../lib/nombaError.js";
 import bcrypt from "bcrypt";
 import { connection } from "../lib/redis.js";
+import  type { SubAccountTransferInput} from "./nomba.service.js";
+import { features } from "process";
 
 
 interface OrderPaymentDetails {
@@ -130,3 +132,55 @@ export const processOrderPayment = async (payload: any) => {
 };
 
 
+export const settlePayment = async (accountName:string, accountNumber:string, bankCode:string, item_name:string, amount:number) =>{
+  try{
+
+    let fee:number
+
+    fee =  Math.round(amount * 1.5/100)
+    if(fee >= 2000){
+      fee = 2000
+    }
+
+  const payout = Math.round(amount - fee)
+  
+  const narration = `Vouch's Escrow Payout for ${item_name}`
+  const senderName = 'Vouch Escrow'
+  const merchantTxRef = generateUniqueToken(22)
+  
+  const bankTransferDetails = {amount, accountNumber, accountName, bankCode,merchantTxRef, senderName, narration}
+
+  const processedSettlement =await db.query.orders.findFirst({
+    where: (eq(orders.transaction_ref, merchantTxRef))
+  })
+  if(processedSettlement){
+    return {status: 409, success:false, message : "payout already settled"}
+  }
+
+  const response = await Payment.transferFundsFromSubAccountToBank(bankTransferDetails)
+   console.log('Transfer response:', JSON.stringify(response, null, 2))
+
+   const {code, data,status, type ,description} =response
+
+  if (status && data.status === 'SUCCESS'){
+  await db.update(orders).set({
+    status: 'SETTLED',
+    fee:fee,
+    payout_amount: payout,
+    settled_at: new Date(),
+    transaction_ref: merchantTxRef
+    })
+  }
+  return {status:200, success:true, message: "Funds released successfully"}
+  }catch (err: any) {
+    console.error("Nomba error", err.message);
+    return handleNombaError(err);
+  }
+}
+
+
+// export const settleWebhookConfirmation = async (payload :any) => {
+//   try{
+//     const {} = payload
+//   }
+// }
