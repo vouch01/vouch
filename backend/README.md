@@ -3,6 +3,12 @@
 
 ├── backend                   # TypeScript + Express + Drizzle
 │   ├── src
+│   │   ├── Tests                     # Functional tests
+│   │   │   ├── auth.test.ts
+│   │   │   ├── order.test.ts        
+│   │   │   └── payment.test.ts
+│   │   │   └── profile.test.ts
+│   │   │   └── test-connection.ts
 │   │   ├── db
 │   │   │   ├── schema.ts     # Drizzle schema definitions (Orders, History)
 │   │   │   └── index.ts      # Database connection (Neon/Supabase client)
@@ -73,6 +79,47 @@
 
 Visit .env.example
 
+## TESTING  
+
+Tests cover auth (register/login/OTP/password reset), vendor profile, and order flow (create/retrieve/delete). Built with **Jest** + **Supertest** and `ts-jest`, running against the live Neon database with Redis and BullMQ mocked out for isolation.
+
+### Setup
+
+```bash
+pnpm install
+```
+
+Copy `.env.example` to `.env` and fill in the values (see Environment Variables section above) — tests reuse the same Neon connection as local dev.
+
+### Run tests
+
+```bash
+pnpm test
+```
+### Run database-check
+
+```bash
+pnpm db-check
+```
+
+### What's mocked vs. real
+
+- **Real:** Postgres (Neon) — tests hit the actual database, no in-memory substitute
+- **Mocked:** Redis connection and BullMQ email queue (`jest.setup.ts`) — so tests don't require a running Redis instance or send real emails
+- **NODE_ENV=test** — gates test-only response fields (e.g. OTP values returned in the response body for verification, never exposed in production)
+
+### Config files
+
+| File | Purpose |
+|------|---------|
+| `jest.config.cjs` | Jest runner config, points to `tsconfig.spec.json` for TS compilation |
+| `tsconfig.spec.json` | Separate TypeScript config for tests — keeps `jest`/`node` types out of the production build |
+| `jest.setup.ts` | Sets `NODE_ENV=test`, mocks Redis and the email queue before any test file runs |
+
+### Notes for reviewers
+- To run a single test , add a `.skip` to other test .
+- Tests run sequentially against a shared vendor record (`iziogbaraymond72@gmail.com`) created in the Auth Flow suite — order and profile tests depend on that vendor existing, so run the full suite rather than individual files in isolation.
+- `--forceExit` is used in the test script since some async handles (DB pool) don't close cleanly between test files; this doesn't affect test correctness.
 
 ## ORDER STATES
 
