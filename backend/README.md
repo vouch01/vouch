@@ -1,16 +1,5 @@
-<!-- 1. Project Overview       ← what Vouch does in 3 lines
-2. Architecture           ← system diagram or flow description
-3. Tech Stack             ← TypeScript, Express, Drizzle, BullMQ, PostgreSQL, Nomba
-4. Nomba APIs Used        ← Virtual Accounts, Transfers, Webhooks, Requery
-5. Database Schema        ← brief description of each table
-6. API Endpoints          ← method, path, description, auth required
-7. State Machine          ← the 6 order states and what triggers each
-8. Setup & Installation   ← clone, .env, migrate, run
-9. Environment Variables  ← list every key in .env.example
-10. Testing  -->
-
-```text
 ## FILE STRUCTURE
+```text
 
 ├── backend                   # TypeScript + Express + Drizzle
 │   ├── src
@@ -18,23 +7,40 @@
 │   │   │   ├── schema.ts     # Drizzle schema definitions (Orders, History)
 │   │   │   └── index.ts      # Database connection (Neon/Supabase client)
 │   │   ├── services
-│   │   │   └── auth.service.ts      # Third-party API wrapper
+│   │   │   └── auth.service.ts      # Auth related services [otp , login , signup, password reset]
 │   │   │   └── mail.service.ts      # Templates for different Emails
-│   │   │   └── order.service.ts      # Third-party API wrapper
-│   │   │   └── payment.service.ts      # Third-party API wrapper
-│   │   │   └── profile.service.ts      # Third-party API wrapper
-│   │   │   └── token.service.ts      # Third-party API wrapper
-│   │   ├── controllers
-│   │   │   ├── auth.controller.ts
+│   │   │   └── order.service.ts      # orchestrates order related actions
+│   │   │   └── payment.service.ts      # Payment services that run after each job gets activated
+│   │   │   └── profile.service.ts      # Profile CRUD actions
+│   │   │   └── token.service.ts      # JWT token 
+│   │   ├── lib                         
+│   │   │   ├── mailer.ts                   # Resend for email's config 
+│   │   │   ├── payment.queue.ts    # Payment queue config
+│   │   │   └── queue.ts                   # Email queue config
+│   │   │   └── redis.ts                      # Redis config
+│   │   ├── controllers                    # HTTP parser
+│   │   │   ├── auth.controller.ts       
 │   │   │   ├── order.controller.ts
 │   │   │   ├── payment.controller.ts
 │   │   │   └── profile.controller.ts
-│   │   ├── routes
+│   │   ├── routes                          #Routes definitions
 │   │   │   ├── auth.routes.ts
-│   │   │   ├── index.routes.ts
-│   │   │   ├── order.routes.ts
+│   │   │   ├── index.routes.ts        # Routes orchestration file 
+│   │   │   ├── order.routes.ts        
 │   │   │   └── payment.routes.ts
-│   │   ── index.ts          # Server entry point, express app config, node-cron
+│   │   │   └── profile.routes.ts
+│   │   │   └── rider.routes.ts
+│   │   │   └── webhook.routes.ts 
+│   │   ├── utils                                 # Helpers
+│   │   │   ├── nomba.ts
+│   │   │   ├── nombaError.ts
+│   │   │   ├── uuid.ts
+│   │   │   └── webhook.ts
+│   │   ├── worker                              # Background workers
+│   │   │   ├── email.worker.ts
+│   │   │   ├── payment.worker.ts
+│   │   ── app.ts          # express app config 
+│   │   ── index.ts          # Server entry point, worker initialization
 │   ├── drizzle.config.ts     # Drizzle CLI configuration
 │   ├── package.json
 │   └── tsconfig.json
@@ -77,7 +83,8 @@ Visit .env.example
 | **DISPATCHED**      | Vendor hands package to courier.                   | Vendor marks order as "Dispatched" in dashboard.                              |
 | **SETTLED**         | Rider inputs correct PIN at doorstep.              | Captures GPS/Timestamp, executes Nomba Bank Account Lookup + Transfer API to Vendor’s bank account. |
 | **EXPIRED** | Countdown timer hits 0          | Marks account invalid, reverses funds if partial payment occurred.            |
-| **REFUNDED** | Dispute raised          | Freezes funds in escrow , refunds fund automatically if dispute persists after 5 days            |
+| **DISPUTED** | Dispute raised          | Freezes funds in escrow , refunds fund automatically if dispute persists after 5 days            |
+| **REFUNDED** | funds refunded          | initialize a transfer to bank account provided by buyer after dipsute persists after 5 days            |
 
 
 ## DATABASE SCHEMA 
@@ -172,3 +179,5 @@ A cron job runs every 15 minutes, querying `GET /v1/transactions/accounts/{subAc
 - Single-instance token cache ; horizontal scaling would need a shared cache (Redis) for the Nomba access token
 - Real time notification system for multi-channel messages delivery
 - Automated dispute resolution with refunds to buyer.
+
+
