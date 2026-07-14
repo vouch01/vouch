@@ -2,7 +2,7 @@ import { eq, and, desc, inArray, isNull } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { vendors, orders, webhook_events, otp_tokens } from "../db/schema.js";
 import {Payment} from "../services/nomba.service.js"
-import { handleNombaError } from "../lib/nombaError.js";
+import { handleNombaError } from "../utils/nombaError.js";
 
 
 interface VendorInputs {

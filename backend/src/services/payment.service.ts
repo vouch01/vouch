@@ -4,7 +4,7 @@ import { db } from "../db/index.js";
 import { vendors, orders, webhook_events, otp_tokens } from "../db/schema.js";
 import { generateUniqueOtp, generateUniqueToken } from "../utils/uuid.js";
 import { formatNombaDate, koboToNombaFormat, nairaToKobo } from "../utils/nomba.js";
-import { handleNombaError } from "../lib/nombaError.js";
+import { handleNombaError } from "../utils/nombaError.js";
 import bcrypt from "bcrypt";
 import { connection } from "../lib/redis.js";
 

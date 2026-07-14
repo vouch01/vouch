@@ -1,4 +1,4 @@
-import { handleNombaError } from '../lib/nombaError.js'
+import { handleNombaError } from '../utils/nombaError.js'
 import {retrieveVendorById, updateVendorDetails, deleteVendor, verifyBankDetails} from '../services/profile.service.js'
 
 export const RetrieveVendorController = async (req:any, res:any) =>{
