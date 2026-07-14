@@ -7,6 +7,8 @@ dotenv.config()
 
 const app: express.Application =express()
 
+app.set("trust proxy", true)
+
 const allowedOrigins= process.env.ALLOWED_ORIGINS?.split(',')  || []
 
 const corsOptions:any = {
