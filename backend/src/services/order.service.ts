@@ -79,13 +79,18 @@ export const createOrder = async (orderData: OrderInputs, vendor_id:string) => {
       .returning();
     const escrowLink = `${baseUrl}/pay/${checkoutToken}`;
 
+    
     return {
       status: 201,
       success: true,
       message: "Order created Successfully",
       escrowLink,
-      data: order[0],
+      data: {
+        ...order[0],
+        expected_amount: amount
+      }
     };
+    
   } catch (err: any) {
     console.error("Error occurred while creating order:", err.message);
     return { status: 500, success: false, message: err.message };
