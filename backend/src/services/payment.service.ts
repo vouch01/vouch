@@ -39,14 +39,14 @@ export const collectOrderPayment = async (checkout_token: string) => {
 
     const formattedAmount = Math.round(expected_amount/100)
 
-    const { bankAccountName, bankAccountNumber, expiryDate } =
+    const {bankName, bankAccountName, bankAccountNumber, expiryDate } =
       await Payment.createVirtualAccountForSubAccount(
         virtual_account_ref,
         formattedAmount,
         nombaTimeFormat,
       );
 
-    const paymentDetails = { bankAccountName, bankAccountNumber, expiryDate };
+    const paymentDetails = { bankName, bankAccountName, bankAccountNumber, expiryDate };
     const orderDetails = {
       buyer_phone,
       item_name,
