@@ -148,12 +148,8 @@ otp_tokens                     |  Store vendor reset tokens
 
 **Live API:** https://api-vouch.onrender.com
 
-**Demo Vendor Account:**
-- Email: `iziogbaraymond72@gmail.com`
-- Password: `Test1234!`
-
-**Test Flow (no signup needed):**
-1. Login with the credentials above to get a vendor token
+**Test Flow:**
+1. signup with credentials  to get a vendor token
 2. `POST /v1/order/create` — creates order & generates an escrow link
 3. Visit the returned `escrowLink` to see the buyer checkout page
 4. Use Nomba sandbox test transfer to the displayed virtual account
